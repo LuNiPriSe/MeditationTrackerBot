@@ -199,6 +199,91 @@ https://api.telegram.org/bot[YOUR_BOT_TOKEN]/setWebhook?url=[YOUR_WEB_APP_URL]
 - Efficient data querying and analytics computation
 - Scalable architecture for multiple users and groups
 
+## ⚠️ Scalability Disclaimer & Performance Warnings
+
+### 📊 Google Sheets as Database Limitations
+
+This bot uses Google Sheets as its primary database, which provides excellent **simplicity and zero infrastructure costs** but comes with important scalability limitations that you should be aware of:
+
+#### Current Architecture Constraints
+
+- **Full table scans**: Every command reads the entire spreadsheet
+- **No indexing**: Linear search through all records (O(n) performance)
+- **Memory consumption**: Loads entire dataset into memory for processing
+- **Google Sheets limits**: 5 million cells per spreadsheet, 400,000 cells per sheet
+
+#### Expected Performance by Scale
+
+| Users | Days | Total Rows | Status Commands | Analysis Commands | User Experience         |
+| ----- | ---- | ---------- | --------------- | ----------------- | ----------------------- |
+| 10    | 30   | ~300       | < 1 second      | < 2 seconds       | ✅ **Excellent**        |
+| 50    | 90   | ~4,500     | 1-2 seconds     | 2-3 seconds       | ✅ **Good**             |
+| 100   | 180  | ~18,000    | 3-5 seconds     | 5-8 seconds       | ⚠️ **Noticeable delay** |
+| 500   | 365  | ~182,500   | 8-15+ seconds   | 15-30+ seconds    | ❌ **Very slow**        |
+| 1000  | 365  | ~365,000   | Timeout likely  | Timeout likely    | ❌ **Unusable**         |
+
+#### Warning Signs to Watch For
+
+- Commands taking more than 3-5 seconds to respond
+- Occasional "Script timeout" errors
+- Users reporting bot "not responding"
+- Analysis commands failing to complete
+
+### 🔧 Optimization Strategies
+
+#### For Small Communities (< 50 users)
+
+✅ **Current implementation is perfect** - no changes needed
+
+#### For Growing Communities (50-100 users)
+
+⚠️ **Consider these optimizations**:
+
+- Implement caching for frequently accessed data
+- Use targeted Google Sheets range queries instead of full table scans
+- Consider monthly sheet partitioning to reduce data size per query
+
+#### For Large Communities (100+ users)
+
+🔄 **Migration strongly recommended** to:
+
+- **Google Cloud Firestore** (maintains serverless architecture)
+- **Google Cloud SQL** (for complex relational queries)
+- **Full cloud architecture** with proper API design
+
+### 🎯 Recommendations Timeline
+
+| Phase       | User Count | Action Required                                 |
+| ----------- | ---------- | ----------------------------------------------- |
+| **Phase 1** | 1-50       | ✅ Use current Google Sheets implementation     |
+| **Phase 2** | 50-100     | ⚠️ Monitor performance, implement optimizations |
+| **Phase 3** | 100-500    | 🔄 Plan database migration to Firestore         |
+| **Phase 4** | 500+       | 🏗️ Full architecture redesign required          |
+
+### 💡 Migration Options
+
+#### Google Cloud Firestore (Recommended next step)
+
+- Maintains serverless architecture
+- Real-time queries with proper indexing
+- Works well with Google Apps Script
+- Better cost structure for larger datasets
+
+#### Traditional Database Solutions
+
+- **Cloud SQL**: For complex relational queries
+- **Cloud Functions**: For better API design
+- **Caching layers**: Redis or Memcached
+
+### 🚨 Important Notes
+
+- **This bot is designed for community/group usage** (meditation groups, small organizations)
+- **Perfect for its intended use case** of tracking meditation in smaller communities
+- **The simplicity of Google Sheets is a feature**, not a bug, for most meditation tracking needs
+- **Migration complexity increases significantly** - only migrate when performance becomes problematic
+
+**Bottom Line**: For meditation communities under 50 active users, this implementation provides an excellent balance of functionality, simplicity, and zero infrastructure costs. Consider the trade-offs carefully before optimizing or migrating.
+
 ## Why Chat ID Registration?
 
 The `/start` command registers your chat ID in the system, enabling:
