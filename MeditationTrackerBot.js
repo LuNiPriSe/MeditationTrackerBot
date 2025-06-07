@@ -38,9 +38,9 @@ function doPost(e) {
                 'Let\'s support each other on this peaceful path:\n' +
                 '/morning - Share your morning meditation 🌅\n' +
                 '/evening - Share your evening meditation 🌙\n' +
-                '/status - See how our community is doing today 🌸\n' +
-                '/analysis - View our collective meditation insights 🌿\n' +
-                '/myanalysis - Reflect on your personal meditation journey 🦋\n' +
+                '/dailyvibrations - Feel today\'s community energy 🌸\n' +
+                '/ourgift - View our collective offering to the world 🌿\n' +
+                '/mygrowth - Reflect on your personal flowering 🦋\n' +
                 '/help - Show this message\n' +
                 '/ayuda - Mostrar este mensaje en español\n';
         }
@@ -55,9 +55,9 @@ function doPost(e) {
                 'Let\'s support each other on this peaceful path:\n' +
                 '/morning - Share your morning meditation 🌅\n' +
                 '/evening - Share your evening meditation 🌙\n' +
-                '/status - See how our community is doing today 🌸\n' +
-                '/analysis - View our collective meditation insights 🌿\n' +
-                '/myanalysis - Reflect on your personal meditation journey 🦋\n' +
+                '/dailyvibrations - Feel today\'s community energy 🌸\n' +
+                '/ourgift - View our collective offering to the world 🌿\n' +
+                '/mygrowth - Reflect on your personal flowering 🦋\n' +
                 '/help - Show this message\n' +
                 '/ayuda - Mostrar este mensaje en español\n';
         } else if (command === '/ayuda') {
@@ -65,14 +65,12 @@ function doPost(e) {
                 'Apoyémonos mutuamente en este sendero pacífico:\n' +
                 '/mañana - Comparte tu meditación matutina 🌅\n' +
                 '/tarde - Comparte tu meditación vespertina 🌙\n' +
-                '/estado - Ve cómo está nuestra comunidad hoy 🌸\n' +
-                '/analisis - Mira nuestros insights colectivos de meditación 🌿\n' +
-                '/mianalisis - Reflexiona sobre tu viaje personal de meditación 🦋\n' +
+                '/vibreshoy - Siente la energía de nuestra comunidad hoy 🌸\n' +
+                '/nuestroregalo - Mira nuestra ofrenda colectiva al mundo 🌿\n' +
+                '/micrecimiento - Reflexiona sobre tu florecimiento personal 🦋\n' +
                 '/help - Show this message in english';
-        } else if (command === '/myanalysis') {
-            responseText = getPersonalAnalysisMessage(sheet, userId, 'en');
-        } else if (command === '/mianalisis') {
-            responseText = getPersonalAnalysisMessage(sheet, userId, 'es');
+        } else if (command === '/mygrowth' || command === '/micrecimiento' || command === '/myanalysis' || command === '/mianalisis') {
+            responseText = getPersonalAnalysisMessage(sheet, userId, command.includes('micrecimiento') || command.includes('mianalisis') ? 'es' : 'en');
         } else if (command === '/morning' || command === '/meditate_morning' || command === '/mañana' || command === '/meditar_mañana') {
             const result = logMeditation(sheet, date, username, 'morning', time, userId);
             if (command === '/mañana' || command === '/meditar_mañana') {
@@ -103,14 +101,10 @@ function doPost(e) {
                     responseText = `🌸 ${result.message}`;
                 }
             }
-        } else if (command === '/status') {
-            responseText = getSimpleStatus(sheet, date, 'en');
-        } else if (command === '/estado') {
-            responseText = getSimpleStatus(sheet, date, 'es');
-        } else if (command === '/analysis') {
-            responseText = getGeneralAnalysisMessage(sheet, 'en');
-        } else if (command === '/analisis') {
-            responseText = getGeneralAnalysisMessage(sheet, 'es');
+        } else if (command === '/dailyvibrations' || command === '/vibreshoy' || command === '/status' || command === '/estado') {
+            responseText = getSimpleStatus(sheet, date, command.includes('vibreshoy') || command.includes('estado') ? 'es' : 'en');
+        } else if (command === '/ourgift' || command === '/nuestroregalo' || command === '/analysis' || command === '/analisis') {
+            responseText = getGeneralAnalysisMessage(sheet, command.includes('nuestroregalo') || command.includes('analisis') ? 'es' : 'en');
         } else {
             responseText = 'Let\'s explore together! 🌱 Send /help or /ayuda for our peaceful commands.';
         }

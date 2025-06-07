@@ -1,6 +1,6 @@
-# MeditationTrackerBot 🧘‍♂️
+# MeditationTrackerBot 🌱
 
-A bilingual Telegram meditation tracking bot built on Google Apps Script that helps users track their daily meditation sessions, provides detailed analytics, and sends automated daily reminders.
+A bilingual Telegram meditation community bot built on Google Apps Script that helps nurture daily meditation practice, provides supportive insights, and sends gentle daily reminders. Transform your meditation journey into a collaborative, spiritual experience.
 
 ![Bot Icon](DhammaBotIcon.png)
 
@@ -12,22 +12,22 @@ A bilingual Telegram meditation tracking bot built on Google Apps Script that he
 - Automatic language detection based on commands
 - Consistent bilingual responses and analytics
 
-### 📊 Meditation Tracking
+### 🌸 Meditation Sharing
 
-- **Morning Sessions** (`/morning` / `/mañana`) - Track AM meditation
-- **Evening Sessions** (`/evening` / `/tarde`) - Track PM meditation
-- Automatic timestamp recording
-- User session history storage
-- Duplicate session prevention
+- **Morning Sessions** (`/morning` / `/mañana`) - Share your morning meditation
+- **Evening Sessions** (`/evening` / `/tarde`) - Share your evening meditation
+- Automatic timestamp recording with gratitude
+- Sacred session history storage
+- Gentle duplicate session prevention
 
-### 📈 Analytics & Reports
+### 🌿 Community Insights & Growth
 
-- **Personal Status** (`/status` / `/estado`) - Individual progress overview with visual progress bars
-- **General Analysis** (`/analysis` / `/analisis`) - Community-wide statistics with visual progress bars
-- **Personal Analysis** (`/myanalysis` / `/mianalisis`) - Detailed personal insights with visual progress bars
-- Completion rates and consistency tracking
-- User participation statistics
-- Visual progress bars for all analytics commands
+- **Daily Vibrations** (`/dailyvibrations` / `/vibreshoy`) - Feel today's community energy with visual energy bars
+- **Our Gift** (`/ourgift` / `/nuestroregalo`) - View our collective offering to the world with visual growth patterns
+- **My Growth** (`/mygrowth` / `/micrecimiento`) - Reflect on your personal flowering with visual growth tracking
+- Collective dedication visualization instead of competition metrics
+- Beautiful souls participation celebration
+- Supportive visual progress bars for all insight commands
 
 ### 🎨 Enhanced Visual Interface
 
@@ -54,56 +54,85 @@ A bilingual Telegram meditation tracking bot built on Google Apps Script that he
 
 ## Commands
 
-| English       | Spanish       | Description                      |
-| ------------- | ------------- | -------------------------------- |
-| `/start`      | `/start`      | Register with the bot            |
-| `/help`       | `/ayuda`      | Show available commands          |
-| `/morning`    | `/mañana`     | Log morning meditation session   |
-| `/evening`    | `/tarde`      | Log evening meditation session   |
-| `/status`     | `/estado`     | View your meditation statistics  |
-| `/analysis`   | `/analisis`   | View community analytics         |
-| `/myanalysis` | `/mianalisis` | View detailed personal analytics |
+| English            | Spanish          | Description                               |
+| ------------------ | ---------------- | ----------------------------------------- |
+| `/start`           | `/start`         | Join our meditation community             |
+| `/help`            | `/ayuda`         | Show available commands                   |
+| `/morning`         | `/mañana`        | Share your morning meditation session     |
+| `/evening`         | `/tarde`         | Share your evening meditation session     |
+| `/dailyvibrations` | `/vibreshoy`     | Feel today's community energy             |
+| `/ourgift`         | `/nuestroregalo` | View our collective offering to the world |
+| `/mygrowth`        | `/micrecimiento` | Reflect on your personal flowering        |
+
+### Legacy Commands (Still Supported)
+
+| English       | Spanish       | Description                                    |
+| ------------- | ------------- | ---------------------------------------------- |
+| `/status`     | `/estado`     | View community energy (use `/dailyvibrations`) |
+| `/analysis`   | `/analisis`   | View collective insights (use `/ourgift`)      |
+| `/myanalysis` | `/mianalisis` | View personal growth (use `/mygrowth`)         |
 
 ## Example Output
 
-### Status Command (`/status`)
+### Daily Vibrations Command (`/dailyvibrations`)
 
 ```
-📊 Status (2025-01-07)
-👥 Total: 6
+🌸 Our Community Journey (2025-01-07)
+🤗 Meditators in our community: 6
 
-🏆 ●○○○○○○○○○ 17% Both sessions
+🌟 ●○○○○○○○○○ 17% Both daily practices
 Kenia
 
-🌞 ●○○○○○○○○○ 17% Morning only
+🌅 ●○○○○○○○○○ 17% Morning practice
 @SimpleMentesLibres
 
-🌙 ●●●●●○○○○○ 50% Evening only
+🌙 ●●●●●○○○○○ 50% Evening practice
 7 lunas, @AVERON9124, @ToniPedragosa
 
-⏳ ●○○○○○○○○○ 17% Pending
+🌱 ●○○○○○○○○○ 17% Awaiting their peaceful moment
 @LuNiPriSe
 
-📈 Today's completion rate
+💚 Today's collective dedication
 ●●●●●●●●●●○○○○○○○○○○ 50%
 ```
 
-### Analysis Command (`/analysis`)
+### Our Gift Command (`/ourgift`)
 
 ```
-📊 Overall Meditation Analysis
+🌿 Our Collective Meditation Insights
 
-Total Participants (all-time): 6
-Total User-Days Tracked: 42
+🤗 Beautiful souls in our community: 6
+🌱 Total days of growth together: 42
 
-Session Distribution (per user per day):
-🏆 ●●○○○○○○○○ 17% Both Sessions
-🌞 ●●○○○○○○○○ 17% Morning Only
-🌙 ●●●●●○○○○○ 50% Evening Only
-⏳ ●●○○○○○○○○ 17% No Sessions
+Our beautiful community pattern:
+🌟 ●●○○○○○○○○ 17% Days with both practices
+🌅 ●●○○○○○○○○ 17% Days of morning practice
+🌙 ●●●●●○○○○○ 50% Days of evening practice
+🌱 ●●○○○○○○○○ 17% Days of rest and reflection
 
-📈 Overall Completion Rate
+💚 Our collective dedication to inner growth
 ●●●●●●●●●●●○○○○○○○○○ 57%
+
+Together we cultivate peace, compassion, and wisdom 🙏✨
+```
+
+### My Growth Command (`/mygrowth`)
+
+```
+🦋 Your Personal Meditation Reflection
+
+Days of inner growth: 7
+
+Your beautiful practice pattern:
+🌟 ●●○○○○○○○○ 29% Days with both practices
+🌅 ●○○○○○○○○○ 14% Days of morning practice
+🌙 ●●●●○○○○○○ 43% Days of evening practice
+🌱 ●○○○○○○○○○ 14% Days of rest
+
+💚 Your dedication to inner growth
+●●●●●●●○○○○○○○○○○○○○ 71%
+
+Every moment of meditation is a gift to yourself 🙏✨
 ```
 
 ## Setup Instructions
