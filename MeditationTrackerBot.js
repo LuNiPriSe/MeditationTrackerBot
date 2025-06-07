@@ -34,40 +34,40 @@ function doPost(e) {
                 console.log('Registration result for /start:', result);
             }
             // Show help message
-            responseText = 'Welcome to Meditation Tracker! 🧘‍♀️\n\n' +
-                'Commands:\n' +
-                '/morning - Log morning meditation\n' +
-                '/evening - Log evening meditation\n' +
-                '/status - See today\'s progress\n' +
-                '/analysis - See overall meditation statistics\n' +
-                '/myanalysis - See your personal meditation statistics\n' +
+            responseText = 'Welcome to our meditation journey! 🌱💙\n\n' +
+                'Let\'s support each other on this peaceful path:\n' +
+                '/morning - Share your morning meditation 🌅\n' +
+                '/evening - Share your evening meditation 🌙\n' +
+                '/status - See how our community is doing today 🌸\n' +
+                '/analysis - View our collective meditation insights 🌿\n' +
+                '/myanalysis - Reflect on your personal meditation journey 🦋\n' +
                 '/help - Show this message\n' +
                 '/ayuda - Mostrar este mensaje en español\n';
         }
         // Check if chat is registered for all other commands (except help)
         else if (command !== '/help' && command !== '/ayuda' && !isChatRegistered(chatId)) {
-            responseText = 'This chat is not registered for meditation tracking. Please send /start to begin! 🧘‍♀️\n\n' +
-                'Este chat no está registrado para seguimiento de meditación. ¡Envía /start para comenzar! 🧘‍♀️';
+            responseText = 'Welcome to our meditation community! 🌱 Please send /start to join our peaceful journey together 💙\n\n' +
+                '¡Bienvenido a nuestra comunidad de meditación! 🌱 ¡Envía /start para unirte a nuestro viaje pacífico juntos! 💙';
         }
         // Bilingual help (excluding /start which is handled above)
         else if (command === '/help') {
-            responseText = 'Welcome to Meditation Tracker! 🧘‍♀️\n\n' +
-                'Commands:\n' +
-                '/morning - Log morning meditation\n' +
-                '/evening - Log evening meditation\n' +
-                '/status - See today\'s progress\n' +
-                '/analysis - See overall meditation statistics\n' +
-                '/myanalysis - See your personal meditation statistics\n' +
+            responseText = 'Welcome to our meditation journey! 🌱💙\n\n' +
+                'Let\'s support each other on this peaceful path:\n' +
+                '/morning - Share your morning meditation 🌅\n' +
+                '/evening - Share your evening meditation 🌙\n' +
+                '/status - See how our community is doing today 🌸\n' +
+                '/analysis - View our collective meditation insights 🌿\n' +
+                '/myanalysis - Reflect on your personal meditation journey 🦋\n' +
                 '/help - Show this message\n' +
                 '/ayuda - Mostrar este mensaje en español\n';
         } else if (command === '/ayuda') {
-            responseText = '¡Bienvenido al Rastreador de Meditación! 🧘‍♀️\n\n' +
-                'Comandos:\n' +
-                '/mañana - Registrar meditación de la mañana\n' +
-                '/tarde - Registrar meditación de la tarde\n' +
-                '/estado - Ver el progreso de hoy\n' +
-                '/analisis - Ver estadísticas generales\n' +
-                '/mianalisis - Tus estadísticas personales\n' +
+            responseText = '¡Bienvenido a nuestro viaje de meditación! 🌱💙\n\n' +
+                'Apoyémonos mutuamente en este sendero pacífico:\n' +
+                '/mañana - Comparte tu meditación matutina 🌅\n' +
+                '/tarde - Comparte tu meditación vespertina 🌙\n' +
+                '/estado - Ve cómo está nuestra comunidad hoy 🌸\n' +
+                '/analisis - Mira nuestros insights colectivos de meditación 🌿\n' +
+                '/mianalisis - Reflexiona sobre tu viaje personal de meditación 🦋\n' +
                 '/help - Show this message in english';
         } else if (command === '/myanalysis') {
             responseText = getPersonalAnalysisMessage(sheet, userId, 'en');
@@ -77,30 +77,30 @@ function doPost(e) {
             const result = logMeditation(sheet, date, username, 'morning', time, userId);
             if (command === '/mañana' || command === '/meditar_mañana') {
                 if (result.success) {
-                    responseText = `🌞 ${username} ¡Meditación de la mañana registrada a las ${time}!`;
+                    responseText = `🌅 ${username} ¡Hermosa meditación matutina completada a las ${time}! Gracias por nutrir tu paz interior 💚`;
                 } else {
-                    responseText = `⚠️ ${result.message}`;
+                    responseText = `🌸 ${result.message}`;
                 }
             } else {
                 if (result.success) {
-                    responseText = `🌞 ${username} logged morning meditation at ${time}!`;
+                    responseText = `🌅 ${username} beautiful morning meditation completed at ${time}! Thank you for nurturing your inner peace 💚`;
                 } else {
-                    responseText = `⚠️ ${result.message}`;
+                    responseText = `🌸 ${result.message}`;
                 }
             }
         } else if (command === '/evening' || command === '/meditate_evening' || command === '/tarde' || command === '/meditar_tarde') {
             const result = logMeditation(sheet, date, username, 'evening', time, userId);
             if (command === '/tarde' || command === '/meditar_tarde') {
                 if (result.success) {
-                    responseText = `🌙 ${username} ¡Meditación de la tarde registrada a las ${time}!`;
+                    responseText = `🌙 ${username} ¡Meditación vespertina llena de serenidad completada a las ${time}! Tu dedicación inspira 💜`;
                 } else {
-                    responseText = `⚠️ ${result.message}`;
+                    responseText = `🌸 ${result.message}`;
                 }
             } else {
                 if (result.success) {
-                    responseText = `🌙 ${username} logged evening meditation at ${time}!`;
+                    responseText = `🌙 ${username} serene evening meditation completed at ${time}! Your dedication inspires 💜`;
                 } else {
-                    responseText = `⚠️ ${result.message}`;
+                    responseText = `🌸 ${result.message}`;
                 }
             }
         } else if (command === '/status') {
@@ -112,7 +112,7 @@ function doPost(e) {
         } else if (command === '/analisis') {
             responseText = getGeneralAnalysisMessage(sheet, 'es');
         } else {
-            responseText = 'Unknown command. Send /help or /ayuda for available commands.';
+            responseText = 'Let\'s explore together! 🌱 Send /help or /ayuda for our peaceful commands.';
         }
 
         sendTelegramMessage(chatId, responseText);
@@ -120,7 +120,7 @@ function doPost(e) {
     } catch (error) {
         console.error('Error in doPost:', error);
         if (data && data.message) {
-            sendTelegramMessage(data.message.chat.id, 'Sorry, an error occurred. Please try again.');
+            sendTelegramMessage(data.message.chat.id, 'A gentle pause occurred 🌸 Please try again when you\'re ready.');
         }
     }
 }
@@ -130,7 +130,7 @@ function registerChat(chatId, chatName) {
     if (isChatRegistered(chatId)) {
         return {
             success: false,
-            message: 'This chat is already registered for meditation tracking!'
+            message: 'Your community is already part of our meditation circle! 🌸'
         };
     }
 
@@ -150,7 +150,7 @@ function registerChat(chatId, chatName) {
 
     return {
         success: true,
-        message: '✅ Chat successfully registered for meditation tracking! You will now receive daily reminders and can track meditations here.'
+        message: '🌱 Welcome to our meditation circle! You\'ll now receive gentle daily reminders and can share your peaceful moments here.'
     };
 }
 
@@ -196,7 +196,7 @@ function logMeditation(sheet, date, username, type, time, userId) {
     if (existingValue && existingValue !== '') {
         return {
             success: false,
-            message: `${type.charAt(0).toUpperCase() + type.slice(1)} meditation already logged today at ${existingValue}! 🧘‍♀️`
+            message: `Your ${type} meditation is already beautifully recorded at ${existingValue}! 🌸✨`
         };
     }
 
@@ -205,7 +205,7 @@ function logMeditation(sheet, date, username, type, time, userId) {
 
     return {
         success: true,
-        message: `${type.charAt(0).toUpperCase() + type.slice(1)} meditation logged successfully!`
+        message: `${type.charAt(0).toUpperCase() + type.slice(1)} meditation shared with love!`
     };
 }
 
@@ -247,7 +247,7 @@ function createAsciiBar(percentage, useFullWidth = false) {
     const filledLength = Math.round((clampedPercentage / 100) * barLength);
     const emptyLength = barLength - filledLength;
 
-    // Use large dots for filled portion and small dots for empty
+    // Use soft dots for a gentle, supportive visualization
     const filledBar = '●'.repeat(filledLength);
     const emptyBar = '○'.repeat(emptyLength);
 
@@ -257,7 +257,7 @@ function createAsciiBar(percentage, useFullWidth = false) {
 }
 
 function formatUserNames(names) {
-    // Simple comma-separated list without decorations
+    // Simple comma-separated list with gentle presentation
     return names.join(', ');
 }
 
@@ -267,14 +267,14 @@ function getSimpleStatus(sheet, date, lang) {
         const rows = dataRange.getValues();
 
         if (rows.length <= 1) {
-            return lang === 'es' ? 'No hay datos de meditación aún.' : 'No meditation data yet.';
+            return lang === 'es' ? 'Nuestro viaje de meditación está comenzando 🌱' : 'Our meditation journey is beginning 🌱';
         }
 
         // Get all unique users (userId: username)
         const allUsers = getAllUniqueUsers(sheet);
         const userIds = Object.keys(allUsers);
         if (userIds.length === 0) {
-            return lang === 'es' ? 'No se encontraron usuarios.' : 'No users found.';
+            return lang === 'es' ? 'Esperando que nuestra comunidad crezca 🌸' : 'Waiting for our community to grow 🌸';
         }
 
         // Analyze today's data
@@ -333,35 +333,35 @@ function getSimpleStatus(sheet, date, lang) {
 
         let msg = '';
         if (lang === 'es') {
-            msg = '📊 Estado (' + date + ')\n';
-            msg += '👥 Total: ' + total + '\n\n';
-            msg += '🏆 ' + bothBar + ' ' + bothPercent + '% Ambas sesiones';
+            msg = '🌸 Nuestro Viaje Comunitario (' + date + ')\n';
+            msg += '🤗 Meditadores en nuestra comunidad: ' + total + '\n\n';
+            msg += '🌟 ' + bothBar + ' ' + bothPercent + '% Ambas prácticas del día';
             if (bothDone.length > 0) msg += '\n' + formatUserNames(bothDone);
-            msg += '\n\n🌞 ' + morningBar + ' ' + morningPercent + '% Solo mañana';
+            msg += '\n\n🌅 ' + morningBar + ' ' + morningPercent + '% Práctica matutina';
             if (morningOnly.length > 0) msg += '\n' + formatUserNames(morningOnly);
-            msg += '\n\n🌙 ' + eveningBar + ' ' + eveningPercent + '% Solo tarde';
+            msg += '\n\n🌙 ' + eveningBar + ' ' + eveningPercent + '% Práctica vespertina';
             if (eveningOnly.length > 0) msg += '\n' + formatUserNames(eveningOnly);
-            msg += '\n\n⏳ ' + notStartedBar + ' ' + notStartedPercent + '% Pendiente';
+            msg += '\n\n🌱 ' + notStartedBar + ' ' + notStartedPercent + '% Esperando su momento de paz';
             if (notStarted.length > 0) msg += '\n' + formatUserNames(notStarted);
-            msg += '\n\n📈 Tasa de cumplimiento de hoy\n' + overallBar;
+            msg += '\n\n💚 Dedicación colectiva de hoy\n' + overallBar;
         } else {
-            msg = '📊 Status (' + date + ')\n';
-            msg += '👥 Total: ' + total + '\n\n';
-            msg += '🏆 ' + bothBar + ' ' + bothPercent + '% Both sessions';
+            msg = '🌸 Our Community Journey (' + date + ')\n';
+            msg += '🤗 Meditators in our community: ' + total + '\n\n';
+            msg += '🌟 ' + bothBar + ' ' + bothPercent + '% Both daily practices';
             if (bothDone.length > 0) msg += '\n' + formatUserNames(bothDone);
-            msg += '\n\n🌞 ' + morningBar + ' ' + morningPercent + '% Morning only';
+            msg += '\n\n🌅 ' + morningBar + ' ' + morningPercent + '% Morning practice';
             if (morningOnly.length > 0) msg += '\n' + formatUserNames(morningOnly);
-            msg += '\n\n🌙 ' + eveningBar + ' ' + eveningPercent + '% Evening only';
+            msg += '\n\n🌙 ' + eveningBar + ' ' + eveningPercent + '% Evening practice';
             if (eveningOnly.length > 0) msg += '\n' + formatUserNames(eveningOnly);
-            msg += '\n\n⏳ ' + notStartedBar + ' ' + notStartedPercent + '% Pending';
+            msg += '\n\n🌱 ' + notStartedBar + ' ' + notStartedPercent + '% Awaiting their peaceful moment';
             if (notStarted.length > 0) msg += '\n' + formatUserNames(notStarted);
-            msg += '\n\n📈 Today\'s completion rate\n' + overallBar;
+            msg += '\n\n💚 Today\'s collective dedication\n' + overallBar;
         }
         return msg;
 
     } catch (error) {
         console.error('Error in getSimpleStatus:', error);
-        return `Status error: ${error.message} (Line: ${error.lineNumber})`;
+        return `A gentle pause in our community update 🌸 ${error.message}`;
     }
 }
 
@@ -391,7 +391,7 @@ function getUserLogRows(sheet, userId) {
 function getPersonalAnalysisMessage(sheet, userId, lang) {
     const userRows = getUserLogRows(sheet, userId);
     if (userRows.length === 0) {
-        return lang === 'es' ? 'No se encontraron registros de meditación para ti.' : 'No meditation records found for you.';
+        return lang === 'es' ? 'Tu hermoso viaje de meditación está comenzando 🌱 ¡Cada momento de paz cuenta!' : 'Your beautiful meditation journey is beginning 🌱 Every peaceful moment counts!';
     }
     // Get all unique dates for this user
     const userDates = getUserLogDates(sheet, userId);
@@ -440,24 +440,26 @@ function getPersonalAnalysisMessage(sheet, userId, lang) {
     const completionBar = createAsciiBar(completionRate, true);
 
     if (lang === 'es') {
-        let msg = `📊 Tu análisis personal de meditación\n\n`;
-        msg += `Días rastreados: ${totalDays}\n\n`;
-        msg += `Distribución de sesiones:\n`;
-        msg += `🏆 ${bothBar} ${bothPercent}% Ambas sesiones\n`;
-        msg += `🌞 ${morningBar} ${morningPercent}% Solo mañana\n`;
-        msg += `🌙 ${eveningBar} ${eveningPercent}% Solo tarde\n`;
-        msg += `⏳ ${noneBar} ${noSessionsPercent}% Ninguna\n\n`;
-        msg += `📈 Tasa de cumplimiento\n${completionBar}`;
+        let msg = `🦋 Tu Reflexión Personal de Meditación\n\n`;
+        msg += `Días de crecimiento interior: ${totalDays}\n\n`;
+        msg += `Tu hermoso patrón de práctica:\n`;
+        msg += `🌟 ${bothBar} ${bothPercent}% Días con ambas prácticas\n`;
+        msg += `🌅 ${morningBar} ${morningPercent}% Días de práctica matutina\n`;
+        msg += `🌙 ${eveningBar} ${eveningPercent}% Días de práctica vespertina\n`;
+        msg += `🌱 ${noneBar} ${noSessionsPercent}% Días de descanso\n\n`;
+        msg += `💚 Tu dedicación al crecimiento interior\n${completionBar}\n\n`;
+        msg += `Cada momento de meditación es un regalo para ti mismo 🙏✨`;
         return msg;
     } else {
-        let msg = `📊 Your Personal Meditation Analysis\n\n`;
-        msg += `Days tracked: ${totalDays}\n\n`;
-        msg += `Session distribution:\n`;
-        msg += `🏆 ${bothBar} ${bothPercent}% Both sessions\n`;
-        msg += `🌞 ${morningBar} ${morningPercent}% Morning only\n`;
-        msg += `🌙 ${eveningBar} ${eveningPercent}% Evening only\n`;
-        msg += `⏳ ${noneBar} ${noSessionsPercent}% None\n\n`;
-        msg += `📈 Completion rate\n${completionBar}`;
+        let msg = `🦋 Your Personal Meditation Reflection\n\n`;
+        msg += `Days of inner growth: ${totalDays}\n\n`;
+        msg += `Your beautiful practice pattern:\n`;
+        msg += `🌟 ${bothBar} ${bothPercent}% Days with both practices\n`;
+        msg += `🌅 ${morningBar} ${morningPercent}% Days of morning practice\n`;
+        msg += `🌙 ${eveningBar} ${eveningPercent}% Days of evening practice\n`;
+        msg += `🌱 ${noneBar} ${noSessionsPercent}% Days of rest\n\n`;
+        msg += `💚 Your dedication to inner growth\n${completionBar}\n\n`;
+        msg += `Every moment of meditation is a gift to yourself 🙏✨`;
         return msg;
     }
 }
@@ -466,7 +468,7 @@ function getPersonalAnalysisMessage(sheet, userId, lang) {
 function getGeneralAnalysisMessage(sheet, lang) {
     const allUsers = getAllUniqueUsers(sheet);
     if (Object.keys(allUsers).length === 0) {
-        return lang === 'es' ? "📊 No hay datos de meditación aún." : "📊 No meditation data available yet.";
+        return lang === 'es' ? "🌱 Nuestro jardín de meditación está creciendo. ¡Cada nuevo meditador es una bendición!" : "🌱 Our meditation garden is growing. Every new meditator is a blessing!";
     }
 
     // Get all dates where ANY user has activity (latest possible date)
@@ -537,25 +539,27 @@ function getGeneralAnalysisMessage(sheet, lang) {
 
     let analysisMessage = '';
     if (lang === 'es') {
-        analysisMessage = "📊 Análisis general de meditación\n\n";
-        analysisMessage += `Participantes totales (histórico): ${totalUsers}\n`;
-        analysisMessage += `Total de días-usuario rastreados: ${totalUserDays}\n\n`;
-        analysisMessage += `Distribución de sesiones (por usuario y día):\n`;
-        analysisMessage += `🏆 ${bothBar} ${bothPercent}% Ambas sesiones\n`;
-        analysisMessage += `🌞 ${morningBar} ${morningPercent}% Solo mañana\n`;
-        analysisMessage += `🌙 ${eveningBar} ${eveningPercent}% Solo tarde\n`;
-        analysisMessage += `⏳ ${noneBar} ${noSessionsPercent}% Ninguna\n\n`;
-        analysisMessage += `📈 Tasa de cumplimiento general\n${completionBar}`;
+        analysisMessage = "🌿 Nuestros Insights Colectivos de Meditación\n\n";
+        analysisMessage += `🤗 Almas hermosas en nuestra comunidad: ${totalUsers}\n`;
+        analysisMessage += `🌱 Total de días de crecimiento juntos: ${totalUserDays}\n\n`;
+        analysisMessage += `Nuestro hermoso patrón comunitario:\n`;
+        analysisMessage += `🌟 ${bothBar} ${bothPercent}% Días con ambas prácticas\n`;
+        analysisMessage += `🌅 ${morningBar} ${morningPercent}% Días de práctica matutina\n`;
+        analysisMessage += `🌙 ${eveningBar} ${eveningPercent}% Días de práctica vespertina\n`;
+        analysisMessage += `🌱 ${noneBar} ${noSessionsPercent}% Días de descanso y reflexión\n\n`;
+        analysisMessage += `💚 Nuestra dedicación colectiva al crecimiento interior\n${completionBar}\n\n`;
+        analysisMessage += `Juntos cultivamos paz, compasión y sabiduría 🙏✨`;
     } else {
-        analysisMessage = "📊 Overall Meditation Analysis\n\n";
-        analysisMessage += `Total Participants (all-time): ${totalUsers}\n`;
-        analysisMessage += `Total User-Days Tracked: ${totalUserDays}\n\n`;
-        analysisMessage += `Session Distribution (per user per day):\n`;
-        analysisMessage += `🏆 ${bothBar} ${bothPercent}% Both Sessions\n`;
-        analysisMessage += `🌞 ${morningBar} ${morningPercent}% Morning Only\n`;
-        analysisMessage += `🌙 ${eveningBar} ${eveningPercent}% Evening Only\n`;
-        analysisMessage += `⏳ ${noneBar} ${noSessionsPercent}% No Sessions\n\n`;
-        analysisMessage += `📈 Overall Completion Rate\n${completionBar}`;
+        analysisMessage = "🌿 Our Collective Meditation Insights\n\n";
+        analysisMessage += `🤗 Beautiful souls in our community: ${totalUsers}\n`;
+        analysisMessage += `🌱 Total days of growth together: ${totalUserDays}\n\n`;
+        analysisMessage += `Our beautiful community pattern:\n`;
+        analysisMessage += `🌟 ${bothBar} ${bothPercent}% Days with both practices\n`;
+        analysisMessage += `🌅 ${morningBar} ${morningPercent}% Days of morning practice\n`;
+        analysisMessage += `🌙 ${eveningBar} ${eveningPercent}% Days of evening practice\n`;
+        analysisMessage += `🌱 ${noneBar} ${noSessionsPercent}% Days of rest and reflection\n\n`;
+        analysisMessage += `💚 Our collective dedication to inner growth\n${completionBar}\n\n`;
+        analysisMessage += `Together we cultivate peace, compassion, and wisdom 🙏✨`;
     }
     return analysisMessage;
 }
@@ -574,7 +578,7 @@ function sendTelegramMessage(chatId, text) {
 
 // Modify the reminder functions to send to all registered chats
 function sendMorningReminder() {
-    const message = "🌞 Good morning! Time for your morning meditation. Send /morning when you're done! 🧘‍♀️";
+    const message = "🌅 Good morning, beautiful souls! 🌸 A gentle invitation for your morning meditation practice. Share with /morning when your heart feels ready! 💚🧘‍♀️";
     const chatIds = getRegisteredChats();
     chatIds.forEach(chatId => {
         sendTelegramMessage(chatId, message);
@@ -582,7 +586,7 @@ function sendMorningReminder() {
 }
 
 function sendEveningReminder() {
-    const message = "🌙 Good evening! Time to wind down with your evening meditation. Send /evening when you're done! 🧘‍♂️";
+    const message = "🌙 The day gently closes, dear friends 🌸 Time to nurture your evening meditation practice. Share with /evening when your soul feels peaceful! 💜🧘‍♂️";
     const chatIds = getRegisteredChats();
     chatIds.forEach(chatId => {
         sendTelegramMessage(chatId, message);
@@ -618,7 +622,7 @@ function setupReminders() {
         .atHour(20)
         .create();
 
-    console.log('Reminders set up for 8 AM and 8 PM daily!');
+    console.log('Gentle daily reminders set up for 8 AM and 8 PM with love!');
 }
 
 // Helper function to clean up duplicate rows (run once)
@@ -647,7 +651,7 @@ function cleanupDuplicateRows() {
         sheet.deleteRow(rowsToDelete[i]);
     }
 
-    console.log(`Cleaned up ${rowsToDelete.length} duplicate rows`);
+    console.log(`Gently cleaned up ${rowsToDelete.length} duplicate entries with care`);
 }
 
 function isChatRegistered(chatId) {
