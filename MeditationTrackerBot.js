@@ -247,9 +247,9 @@ function createAsciiBar(percentage, useFullWidth = false) {
     const filledLength = Math.round((clampedPercentage / 100) * barLength);
     const emptyLength = barLength - filledLength;
 
-    // Use light blue blocks for filled portion
-    const filledBar = '🔷'.repeat(filledLength);
-    const emptyBar = '⬜'.repeat(emptyLength);
+    // Use large dots for filled portion and small dots for empty
+    const filledBar = '●'.repeat(filledLength);
+    const emptyBar = '○'.repeat(emptyLength);
 
     return useFullWidth ?
         `${filledBar}${emptyBar} ${clampedPercentage}%` :
@@ -343,25 +343,25 @@ function getSimpleStatus(sheet, date, lang) {
         if (lang === 'es') {
             msg = '📊 Estado (' + date + ')\n';
             msg += '👥 Total: ' + total + '\n\n';
-            msg += '🏆 ' + bothBar + ' ' + bothPercent + '%';
+            msg += '🏆 ' + bothBar + ' ' + bothPercent + '% Ambas sesiones';
             if (bothDone.length > 0) msg += '\n' + formatUserNames(bothDone);
-            msg += '\n\n🌞 ' + morningBar + ' ' + morningPercent + '%';
+            msg += '\n\n🌞 ' + morningBar + ' ' + morningPercent + '% Solo mañana';
             if (morningOnly.length > 0) msg += '\n' + formatUserNames(morningOnly);
-            msg += '\n\n🌙 ' + eveningBar + ' ' + eveningPercent + '%';
+            msg += '\n\n🌙 ' + eveningBar + ' ' + eveningPercent + '% Solo tarde';
             if (eveningOnly.length > 0) msg += '\n' + formatUserNames(eveningOnly);
-            msg += '\n\n⏳ ' + notStartedBar + ' ' + notStartedPercent + '%';
+            msg += '\n\n⏳ ' + notStartedBar + ' ' + notStartedPercent + '% Pendiente';
             if (notStarted.length > 0) msg += '\n' + formatUserNames(notStarted);
             msg += '\n\n📈 Tasa de cumplimiento de hoy\n' + overallBar;
         } else {
             msg = '📊 Status (' + date + ')\n';
             msg += '👥 Total: ' + total + '\n\n';
-            msg += '🏆 ' + bothBar + ' ' + bothPercent + '%';
+            msg += '🏆 ' + bothBar + ' ' + bothPercent + '% Both sessions';
             if (bothDone.length > 0) msg += '\n' + formatUserNames(bothDone);
-            msg += '\n\n🌞 ' + morningBar + ' ' + morningPercent + '%';
+            msg += '\n\n🌞 ' + morningBar + ' ' + morningPercent + '% Morning only';
             if (morningOnly.length > 0) msg += '\n' + formatUserNames(morningOnly);
-            msg += '\n\n🌙 ' + eveningBar + ' ' + eveningPercent + '%';
+            msg += '\n\n🌙 ' + eveningBar + ' ' + eveningPercent + '% Evening only';
             if (eveningOnly.length > 0) msg += '\n' + formatUserNames(eveningOnly);
-            msg += '\n\n⏳ ' + notStartedBar + ' ' + notStartedPercent + '%';
+            msg += '\n\n⏳ ' + notStartedBar + ' ' + notStartedPercent + '% Pending';
             if (notStarted.length > 0) msg += '\n' + formatUserNames(notStarted);
             msg += '\n\n📈 Today\'s completion rate\n' + overallBar;
         }
