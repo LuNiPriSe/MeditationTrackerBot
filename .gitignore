@@ -1,0 +1,18 @@
+# macOS
+.DS_Store
+
+# Node
+node_modules/
+npm-debug.log
+
+# VSCode/JetBrains
+.vscode/
+.idea/
+
+# clasp (if you use it)
+.clasp.json
+
+# Environment/secrets
+.env
+.env.*
+credentials.json 
