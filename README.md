@@ -1,6 +1,6 @@
 # MeditationTrackerBot 🧘‍♂️
 
-A bilingual Telegram meditation tracking bot built on Google Apps Script that helps users track their daily meditation sessions and provides detailed analytics.
+A bilingual Telegram meditation tracking bot built on Google Apps Script that helps users track their daily meditation sessions, provides detailed analytics, and sends automated daily reminders.
 
 ![Bot Icon](DhammaBotIcon.png)
 
@@ -18,6 +18,7 @@ A bilingual Telegram meditation tracking bot built on Google Apps Script that he
 - **Evening Sessions** (`/evening` / `/tarde`) - Track PM meditation
 - Automatic timestamp recording
 - User session history storage
+- Duplicate session prevention
 
 ### 📈 Analytics & Reports
 
@@ -27,10 +28,18 @@ A bilingual Telegram meditation tracking bot built on Google Apps Script that he
 - Completion rates and consistency tracking
 - User participation statistics
 
+### 🔔 Automated Reminders
+
+- **Daily morning reminders** at 8:00 AM 🌞
+- **Daily evening reminders** at 8:00 PM 🌙
+- Sent to all registered chats automatically
+- Customizable timing via Google Apps Script triggers
+
 ### 🔐 User Management
 
 - Registration system via `/start` command
 - Telegram user ID-based tracking (privacy-safe)
+- Chat ID registration for group reminders
 - Duplicate registration prevention
 - Unregistered user handling
 
@@ -46,48 +55,107 @@ A bilingual Telegram meditation tracking bot built on Google Apps Script that he
 | `/analysis`   | `/analisis`   | View community analytics         |
 | `/myanalysis` | `/mianalisis` | View detailed personal analytics |
 
+## Setup Instructions
+
+### Prerequisites
+
+1. **Telegram Bot**: Create via [@BotFather](https://t.me/botfather) on Telegram
+2. **Google Account**: Access to [Google Apps Script](https://script.google.com)
+3. **Google Sheets**: Document for data storage via [Google Sheets](https://sheets.google.com)
+
+### Step 1: Create Google Sheets Document
+
+1. Go to [Google Sheets](https://sheets.google.com)
+2. Create a new spreadsheet
+3. **Copy the Sheet ID** from the URL:
+   ```
+   https://docs.google.com/spreadsheets/d/[SHEET_ID]/edit
+   ```
+   Example: `1ABC123def456GHI789jkl012MNO345pqr678STU901vwx234YZ`
+
+### Step 2: Configure Google Apps Script
+
+1. Go to [Google Apps Script](https://script.google.com)
+2. Create a new project
+3. Replace the default code with `MeditationTrackerBot.js`
+4. **Configure the constants** at the top of the script:
+   ```javascript
+   const TELEGRAM_BOT_TOKEN = "YOUR_BOT_TOKEN_FROM_BOTFATHER";
+   const SHEET_ID = "YOUR_GOOGLE_SHEETS_ID_FROM_STEP_1";
+   ```
+
+### Step 3: Run Setup Functions
+
+Execute these functions in Google Apps Script (Run > Function):
+
+1. **`setupSheet()`** - Creates proper column headers in your Google Sheet:
+
+   - Date, User ID, Username, Morning Time, Evening Time
+
+2. **`setupReminders()`** - Configures automated daily reminders:
+   - Morning reminder at 8:00 AM
+   - Evening reminder at 8:00 PM
+   - Automatically sends to all registered chats
+
+### Step 4: Deploy the Bot
+
+1. In Google Apps Script: **Deploy > New deployment**
+2. Type: **Web app**
+3. Execute as: **Me**
+4. Who has access: **Anyone**
+5. Copy the **Web app URL**
+
+### Step 5: Set Telegram Webhook
+
+Use this URL (replace with your details):
+
+```
+https://api.telegram.org/bot[YOUR_BOT_TOKEN]/setWebhook?url=[YOUR_WEB_APP_URL]
+```
+
+### Optional: Maintenance Functions
+
+- **`cleanupDuplicateRows()`** - Remove duplicate entries (run once if needed)
+
 ## Technical Architecture
 
 ### Google Apps Script Integration
 
-- Built entirely on Google Apps Script platform
+- Built entirely on [Google Apps Script](https://script.google.com) platform
 - No external server infrastructure required
-- Integrates seamlessly with Google Sheets for data storage
+- Integrates seamlessly with [Google Sheets](https://sheets.google.com) for data storage
+- Automated triggers for daily reminders
 
-### Data Storage
+### Data Storage (Google Sheets)
 
 - **MeditationLog Sheet**: Stores all meditation sessions with timestamps
-- **ChatIDs Sheet**: Manages registered users and their Telegram IDs
+  - Columns: Date, User ID, Username, Morning Time, Evening Time
+- **ChatIDs Sheet**: Manages registered chats for reminders
+  - Columns: Chat ID, Chat Name, Registration Date
 - Automatic data validation and duplicate prevention
+
+### Reminder System
+
+- **Chat ID Registration**: Required for receiving automated reminders
+- **Time-based Triggers**: Google Apps Script manages daily reminder scheduling
+- **Bilingual Reminders**: Supports both English and Spanish reminder messages
+- **Multi-chat Support**: Sends reminders to individual chats and groups
 
 ### Bot Features
 
 - Robust error handling with bilingual error messages
 - User privacy protection (works with Telegram privacy settings)
 - Efficient data querying and analytics computation
-- Scalable architecture for multiple users
+- Scalable architecture for multiple users and groups
 
-## Setup Instructions
+## Why Chat ID Registration?
 
-### Prerequisites
+The `/start` command registers your chat ID in the system, enabling:
 
-1. Google Account with Google Apps Script access
-2. Telegram Bot Token (from @BotFather)
-3. Google Sheets document for data storage
-
-### Installation
-
-1. Create a new Google Apps Script project
-2. Copy the `MeditationTrackerBot.js` code
-3. Set up the required Google Sheets with proper column structure
-4. Configure your Telegram Bot Token in the script
-5. Deploy as a web app and set the webhook
-
-### Configuration
-
-- Update the `SHEET_ID` constant with your Google Sheets ID
-- Replace `BOT_TOKEN` with your actual Telegram bot token
-- Configure webhook URL in Telegram Bot API
+- **Daily meditation reminders** sent directly to your chat
+- **Group support** - works in both private messages and group chats
+- **Privacy compliance** - respects Telegram privacy settings
+- **Persistent tracking** - maintains your meditation history
 
 ## Data Privacy & Security
 
@@ -95,6 +163,7 @@ A bilingual Telegram meditation tracking bot built on Google Apps Script that he
 - Works with users who have privacy settings enabled
 - No personal data stored beyond meditation session logs
 - GDPR-compliant data handling
+- Secure Google Apps Script environment
 
 ## Analytics Capabilities
 
@@ -102,6 +171,15 @@ A bilingual Telegram meditation tracking bot built on Google Apps Script that he
 - **Community Stats**: Overall participation and completion rates
 - **Temporal Analysis**: Daily, weekly, and monthly trends
 - **Comparative Insights**: Progress relative to community averages
+- **Per-user Relative Calculation**: Fair analysis based on individual start dates
+
+## Useful Links
+
+- 🤖 [Create Telegram Bot](https://t.me/botfather)
+- 📝 [Google Apps Script](https://script.google.com)
+- 📊 [Google Sheets](https://sheets.google.com)
+- 🔗 [Telegram Bot API Documentation](https://core.telegram.org/bots/api)
+- 📚 [Google Apps Script Documentation](https://developers.google.com/apps-script)
 
 ## Contributing
 
