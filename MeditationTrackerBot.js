@@ -257,16 +257,8 @@ function createAsciiBar(percentage, useFullWidth = false) {
 }
 
 function formatUserNames(names) {
-    // Format usernames and names in blue text
-    return names.map(name => {
-        // If it starts with @, it's a username
-        if (name.startsWith('@')) {
-            return `🔵${name}`;
-        } else {
-            // Regular name
-            return `🔵${name}`;
-        }
-    }).join(', ');
+    // Simple comma-separated list without decorations
+    return names.join(', ');
 }
 
 function getSimpleStatus(sheet, date, lang) {
@@ -440,25 +432,32 @@ function getPersonalAnalysisMessage(sheet, username, lang) {
     const completedSessions = (bothSessions * 2) + morningOnly + eveningOnly;
     const totalPossibleSessions = totalDays * 2;
     const completionRate = Math.round((completedSessions / totalPossibleSessions) * 100);
+    // Generate progress bars
+    const bothBar = createAsciiBar(bothPercent);
+    const morningBar = createAsciiBar(morningPercent);
+    const eveningBar = createAsciiBar(eveningPercent);
+    const noneBar = createAsciiBar(noSessionsPercent);
+    const completionBar = createAsciiBar(completionRate, true);
+
     if (lang === 'es') {
         let msg = `📊 Tu análisis personal de meditación\n\n`;
-        msg += `Días rastreados: ${totalDays}\n`;
+        msg += `Días rastreados: ${totalDays}\n\n`;
         msg += `Distribución de sesiones:\n`;
-        msg += `🏆 Ambas sesiones: ${bothPercent}%\n`;
-        msg += `🌞 Solo mañana: ${morningPercent}%\n`;
-        msg += `🌙 Solo tarde: ${eveningPercent}%\n`;
-        msg += `⏳ Ninguna: ${noSessionsPercent}%\n\n`;
-        msg += `📈 Tasa de cumplimiento: ${completionRate}%`;
+        msg += `🏆 ${bothBar} ${bothPercent}% Ambas sesiones\n`;
+        msg += `🌞 ${morningBar} ${morningPercent}% Solo mañana\n`;
+        msg += `🌙 ${eveningBar} ${eveningPercent}% Solo tarde\n`;
+        msg += `⏳ ${noneBar} ${noSessionsPercent}% Ninguna\n\n`;
+        msg += `📈 Tasa de cumplimiento\n${completionBar}`;
         return msg;
     } else {
         let msg = `📊 Your Personal Meditation Analysis\n\n`;
-        msg += `Days tracked: ${totalDays}\n`;
+        msg += `Days tracked: ${totalDays}\n\n`;
         msg += `Session distribution:\n`;
-        msg += `🏆 Both sessions: ${bothPercent}%\n`;
-        msg += `🌞 Morning only: ${morningPercent}%\n`;
-        msg += `🌙 Evening only: ${eveningPercent}%\n`;
-        msg += `⏳ None: ${noSessionsPercent}%\n\n`;
-        msg += `📈 Completion rate: ${completionRate}%`;
+        msg += `🏆 ${bothBar} ${bothPercent}% Both sessions\n`;
+        msg += `🌞 ${morningBar} ${morningPercent}% Morning only\n`;
+        msg += `🌙 ${eveningBar} ${eveningPercent}% Evening only\n`;
+        msg += `⏳ ${noneBar} ${noSessionsPercent}% None\n\n`;
+        msg += `📈 Completion rate\n${completionBar}`;
         return msg;
     }
 }
@@ -529,27 +528,34 @@ function getGeneralAnalysisMessage(sheet, lang) {
     const eveningPercent = totalUserDays === 0 ? 0 : Math.round((eveningOnly / totalUserDays) * 100);
     const noSessionsPercent = totalUserDays === 0 ? 0 : Math.round((noSessions / totalUserDays) * 100);
     const completionRate = totalPossibleSessions === 0 ? 0 : Math.round((completedSessions / totalPossibleSessions) * 100);
+    // Generate progress bars
+    const bothBar = createAsciiBar(bothPercent);
+    const morningBar = createAsciiBar(morningPercent);
+    const eveningBar = createAsciiBar(eveningPercent);
+    const noneBar = createAsciiBar(noSessionsPercent);
+    const completionBar = createAsciiBar(completionRate, true);
+
     let analysisMessage = '';
     if (lang === 'es') {
         analysisMessage = "📊 Análisis general de meditación\n\n";
         analysisMessage += `Participantes totales (histórico): ${totalUsers}\n`;
         analysisMessage += `Total de días-usuario rastreados: ${totalUserDays}\n\n`;
         analysisMessage += `Distribución de sesiones (por usuario y día):\n`;
-        analysisMessage += `🏆 Ambas sesiones: ${bothPercent}%\n`;
-        analysisMessage += `🌞 Solo mañana: ${morningPercent}%\n`;
-        analysisMessage += `🌙 Solo tarde: ${eveningPercent}%\n`;
-        analysisMessage += `⏳ Ninguna: ${noSessionsPercent}%\n\n`;
-        analysisMessage += `📈 Tasa de cumplimiento general: ${completionRate}%`;
+        analysisMessage += `🏆 ${bothBar} ${bothPercent}% Ambas sesiones\n`;
+        analysisMessage += `🌞 ${morningBar} ${morningPercent}% Solo mañana\n`;
+        analysisMessage += `🌙 ${eveningBar} ${eveningPercent}% Solo tarde\n`;
+        analysisMessage += `⏳ ${noneBar} ${noSessionsPercent}% Ninguna\n\n`;
+        analysisMessage += `📈 Tasa de cumplimiento general\n${completionBar}`;
     } else {
         analysisMessage = "📊 Overall Meditation Analysis\n\n";
         analysisMessage += `Total Participants (all-time): ${totalUsers}\n`;
         analysisMessage += `Total User-Days Tracked: ${totalUserDays}\n\n`;
         analysisMessage += `Session Distribution (per user per day):\n`;
-        analysisMessage += `🏆 Both Sessions: ${bothPercent}%\n`;
-        analysisMessage += `🌞 Morning Only: ${morningPercent}%\n`;
-        analysisMessage += `🌙 Evening Only: ${eveningPercent}%\n`;
-        analysisMessage += `⏳ No Sessions: ${noSessionsPercent}%\n\n`;
-        analysisMessage += `📈 Overall Completion Rate: ${completionRate}%`;
+        analysisMessage += `🏆 ${bothBar} ${bothPercent}% Both Sessions\n`;
+        analysisMessage += `🌞 ${morningBar} ${morningPercent}% Morning Only\n`;
+        analysisMessage += `🌙 ${eveningBar} ${eveningPercent}% Evening Only\n`;
+        analysisMessage += `⏳ ${noneBar} ${noSessionsPercent}% No Sessions\n\n`;
+        analysisMessage += `📈 Overall Completion Rate\n${completionBar}`;
     }
     return analysisMessage;
 }
