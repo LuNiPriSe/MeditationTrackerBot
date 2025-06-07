@@ -239,18 +239,34 @@ function getAllUniqueDates(sheet) {
     return Array.from(dates).sort();
 }
 
-function createAsciiBar(percentage) {
-  const roundedPercentage = Math.round(percentage);
-  const clampedPercentage = Math.max(0, Math.min(100, roundedPercentage)); // Ensure percentage is between 0 and 100
+function createAsciiBar(percentage, useFullWidth = false) {
+    const roundedPercentage = Math.round(percentage);
+    const clampedPercentage = Math.max(0, Math.min(100, roundedPercentage));
 
-  const barLength = 10;
-  const filledLength = Math.round((clampedPercentage / 100) * barLength);
-  const emptyLength = barLength - filledLength;
+    const barLength = useFullWidth ? 20 : 10;
+    const filledLength = Math.round((clampedPercentage / 100) * barLength);
+    const emptyLength = barLength - filledLength;
 
-  const filledBar = '█'.repeat(filledLength);
-  const emptyBar = '-'.repeat(emptyLength);
+    // Use light blue blocks for filled portion
+    const filledBar = '🔷'.repeat(filledLength);
+    const emptyBar = '⬜'.repeat(emptyLength);
 
-  return `[${filledBar}${emptyBar}] ${clampedPercentage}%`;
+    return useFullWidth ?
+        `${filledBar}${emptyBar} ${clampedPercentage}%` :
+        `${filledBar}${emptyBar}`;
+}
+
+function formatUserNames(names) {
+    // Format usernames and names in blue text
+    return names.map(name => {
+        // If it starts with @, it's a username
+        if (name.startsWith('@')) {
+            return `🔵${name}`;
+        } else {
+            // Regular name
+            return `🔵${name}`;
+        }
+    }).join(', ');
 }
 
 function getSimpleStatus(sheet, date, lang) {
@@ -306,7 +322,6 @@ function getSimpleStatus(sheet, date, lang) {
 
         // Calculate percentages
         const total = userIds.length;
-        const total = userIds.length;
         const bothPercent = total > 0 ? Math.round((bothDone.length / total) * 100) : 0;
         const morningPercent = total > 0 ? Math.round((morningOnly.length / total) * 100) : 0;
         const eveningPercent = total > 0 ? Math.round((eveningOnly.length / total) * 100) : 0;
@@ -322,32 +337,32 @@ function getSimpleStatus(sheet, date, lang) {
         const morningBar = createAsciiBar(morningPercent);
         const eveningBar = createAsciiBar(eveningPercent);
         const notStartedBar = createAsciiBar(notStartedPercent);
-        const overallBar = createAsciiBar(overallCompletionRate);
+        const overallBar = createAsciiBar(overallCompletionRate, true);
 
         let msg = '';
         if (lang === 'es') {
             msg = '📊 Estado (' + date + ')\n';
             msg += '👥 Total: ' + total + '\n\n';
-            msg += '🏆 Ambas: ' + bothDone.length + ' (' + bothPercent + '%) ' + bothBar;
-            if (bothDone.length > 0) msg += '\n' + bothDone.join(', ');
-            msg += '\n\n🌞 Mañana: ' + morningOnly.length + ' (' + morningPercent + '%) ' + morningBar;
-            if (morningOnly.length > 0) msg += '\n' + morningOnly.join(', ');
-            msg += '\n\n🌙 Tarde: ' + eveningOnly.length + ' (' + eveningPercent + '%) ' + eveningBar;
-            if (eveningOnly.length > 0) msg += '\n' + eveningOnly.join(', ');
-            msg += '\n\n⏳ Pendiente: ' + notStarted.length + ' (' + notStartedPercent + '%) ' + notStartedBar;
-            if (notStarted.length > 0) msg += '\n' + notStarted.join(', ');
+            msg += '🏆 ' + bothBar + ' ' + bothPercent + '%';
+            if (bothDone.length > 0) msg += '\n' + formatUserNames(bothDone);
+            msg += '\n\n🌞 ' + morningBar + ' ' + morningPercent + '%';
+            if (morningOnly.length > 0) msg += '\n' + formatUserNames(morningOnly);
+            msg += '\n\n🌙 ' + eveningBar + ' ' + eveningPercent + '%';
+            if (eveningOnly.length > 0) msg += '\n' + formatUserNames(eveningOnly);
+            msg += '\n\n⏳ ' + notStartedBar + ' ' + notStartedPercent + '%';
+            if (notStarted.length > 0) msg += '\n' + formatUserNames(notStarted);
             msg += '\n\n📈 Tasa de cumplimiento de hoy\n' + overallBar;
         } else {
             msg = '📊 Status (' + date + ')\n';
             msg += '👥 Total: ' + total + '\n\n';
-            msg += '🏆 Both: ' + bothDone.length + ' (' + bothPercent + '%) ' + bothBar;
-            if (bothDone.length > 0) msg += '\n' + bothDone.join(', ');
-            msg += '\n\n🌞 Morning: ' + morningOnly.length + ' (' + morningPercent + '%) ' + morningBar;
-            if (morningOnly.length > 0) msg += '\n' + morningOnly.join(', ');
-            msg += '\n\n🌙 Evening: ' + eveningOnly.length + ' (' + eveningPercent + '%) ' + eveningBar;
-            if (eveningOnly.length > 0) msg += '\n' + eveningOnly.join(', ');
-            msg += '\n\n⏳ Pending: ' + notStarted.length + ' (' + notStartedPercent + '%) ' + notStartedBar;
-            if (notStarted.length > 0) msg += '\n' + notStarted.join(', ');
+            msg += '🏆 ' + bothBar + ' ' + bothPercent + '%';
+            if (bothDone.length > 0) msg += '\n' + formatUserNames(bothDone);
+            msg += '\n\n🌞 ' + morningBar + ' ' + morningPercent + '%';
+            if (morningOnly.length > 0) msg += '\n' + formatUserNames(morningOnly);
+            msg += '\n\n🌙 ' + eveningBar + ' ' + eveningPercent + '%';
+            if (eveningOnly.length > 0) msg += '\n' + formatUserNames(eveningOnly);
+            msg += '\n\n⏳ ' + notStartedBar + ' ' + notStartedPercent + '%';
+            if (notStarted.length > 0) msg += '\n' + formatUserNames(notStarted);
             msg += '\n\n📈 Today\'s completion rate\n' + overallBar;
         }
         return msg;
