@@ -64,14 +64,6 @@ A bilingual Telegram meditation community bot built on Google Apps Script that h
 | `/ourgift`         | `/nuestroregalo` | View our collective offering to the world |
 | `/mygrowth`        | `/micrecimiento` | Reflect on your personal flowering        |
 
-### Legacy Commands (Still Supported)
-
-| English       | Spanish       | Description                                    |
-| ------------- | ------------- | ---------------------------------------------- |
-| `/status`     | `/estado`     | View community energy (use `/dailyvibrations`) |
-| `/analysis`   | `/analisis`   | View collective insights (use `/ourgift`)      |
-| `/myanalysis` | `/mianalisis` | View personal growth (use `/mygrowth`)         |
-
 ## Example Output
 
 ### Daily Vibrations Command (`/dailyvibrations`)
@@ -81,16 +73,16 @@ A bilingual Telegram meditation community bot built on Google Apps Script that h
 🤗 Meditators in our community: 6
 
 🌟 ●○○○○○○○○○ 17% Both daily practices
-Kenia
+@meditator1
 
 🌅 ●○○○○○○○○○ 17% Morning practice
-@SimpleMentesLibres
+@user2
 
 🌙 ●●●●●○○○○○ 50% Evening practice
-7 lunas, @AVERON9124, @ToniPedragosa
+@peacekeeper, @mindful_soul, @zenmaster
 
 🌱 ●○○○○○○○○○ 17% Awaiting their peaceful moment
-@LuNiPriSe
+@seeker
 
 💚 Today's collective dedication
 ●●●●●●●●●●○○○○○○○○○○ 50%
@@ -130,7 +122,7 @@ Your beautiful practice pattern:
 🌱 ●○○○○○○○○○ 14% Days of rest
 
 💚 Your dedication to inner growth
-●●●●●●●○○○○○○○○○○○○○ 71%
+●●●●●●●●●●●●●●○○○○○○ 71%
 
 Every moment of meditation is a gift to yourself 🙏✨
 ```
