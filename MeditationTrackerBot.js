@@ -70,9 +70,9 @@ function doPost(e) {
                 '/mianalisis - Tus estadísticas personales\n' +
                 '/help - Show this message in english';
         } else if (command === '/myanalysis') {
-            responseText = getPersonalAnalysisMessage(sheet, username, 'en');
+            responseText = getPersonalAnalysisMessage(sheet, userId, 'en');
         } else if (command === '/mianalisis') {
-            responseText = getPersonalAnalysisMessage(sheet, username, 'es');
+            responseText = getPersonalAnalysisMessage(sheet, userId, 'es');
         } else if (command === '/morning' || command === '/meditate_morning' || command === '/mañana' || command === '/meditar_mañana') {
             const result = logMeditation(sheet, date, username, 'morning', time, userId);
             if (command === '/mañana' || command === '/meditar_mañana') {
@@ -388,13 +388,13 @@ function getUserLogRows(sheet, userId) {
 }
 
 // Personal analysis for a user
-function getPersonalAnalysisMessage(sheet, username, lang) {
-    const userRows = getUserLogRows(sheet, username);
+function getPersonalAnalysisMessage(sheet, userId, lang) {
+    const userRows = getUserLogRows(sheet, userId);
     if (userRows.length === 0) {
         return lang === 'es' ? 'No se encontraron registros de meditación para ti.' : 'No meditation records found for you.';
     }
     // Get all unique dates for this user
-    const userDates = getUserLogDates(sheet, username);
+    const userDates = getUserLogDates(sheet, userId);
     let bothSessions = 0;
     let morningOnly = 0;
     let eveningOnly = 0;
@@ -410,8 +410,8 @@ function getPersonalAnalysisMessage(sheet, username, lang) {
     });
     userDates.forEach(date => {
         const row = rowMap[date];
-        const morning = row ? row[2] : '';
-        const evening = row ? row[3] : '';
+        const morning = row ? row[3] : '';
+        const evening = row ? row[4] : '';
         const hasMorning = morning && morning !== '' && morning !== null;
         const hasEvening = evening && evening !== '' && evening !== null;
         if (hasMorning && hasEvening) {
