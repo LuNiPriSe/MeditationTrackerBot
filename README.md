@@ -22,11 +22,20 @@ A bilingual Telegram meditation tracking bot built on Google Apps Script that he
 
 ### 📈 Analytics & Reports
 
-- **Personal Status** (`/status` / `/estado`) - Individual progress overview
-- **General Analysis** (`/analysis` / `/analisis`) - Community-wide statistics
-- **Personal Analysis** (`/myanalysis` / `/mianalisis`) - Detailed personal insights
+- **Personal Status** (`/status` / `/estado`) - Individual progress overview with visual progress bars
+- **General Analysis** (`/analysis` / `/analisis`) - Community-wide statistics with visual progress bars
+- **Personal Analysis** (`/myanalysis` / `/mianalisis`) - Detailed personal insights with visual progress bars
 - Completion rates and consistency tracking
 - User participation statistics
+- Visual progress bars for all analytics commands
+
+### 🎨 Enhanced Visual Interface
+
+- **Dot-based Progress Bars**: Visual representation using filled (●) and empty (○) dots
+- **Consistent Formatting**: Icon → Progress Bar → Percentage → Category Name → User List
+- **Full-width Completion Bars**: Enhanced visibility for overall completion rates
+- **Clean User Display**: Simple, readable username and name lists
+- **Bilingual Visual Elements**: Consistent formatting across English and Spanish interfaces
 
 ### 🔔 Automated Reminders
 
@@ -54,6 +63,48 @@ A bilingual Telegram meditation tracking bot built on Google Apps Script that he
 | `/status`     | `/estado`     | View your meditation statistics  |
 | `/analysis`   | `/analisis`   | View community analytics         |
 | `/myanalysis` | `/mianalisis` | View detailed personal analytics |
+
+## Example Output
+
+### Status Command (`/status`)
+
+```
+📊 Status (2025-01-07)
+👥 Total: 6
+
+🏆 ●○○○○○○○○○ 17% Both sessions
+Kenia
+
+🌞 ●○○○○○○○○○ 17% Morning only
+@SimpleMentesLibres
+
+🌙 ●●●●●○○○○○ 50% Evening only
+7 lunas, @AVERON9124, @ToniPedragosa
+
+⏳ ●○○○○○○○○○ 17% Pending
+@LuNiPriSe
+
+📈 Today's completion rate
+●●●●●●●●●●○○○○○○○○○○ 50%
+```
+
+### Analysis Command (`/analysis`)
+
+```
+📊 Overall Meditation Analysis
+
+Total Participants (all-time): 6
+Total User-Days Tracked: 42
+
+Session Distribution (per user per day):
+🏆 ●●○○○○○○○○ 17% Both Sessions
+🌞 ●●○○○○○○○○ 17% Morning Only
+🌙 ●●●●●○○○○○ 50% Evening Only
+⏳ ●●○○○○○○○○ 17% No Sessions
+
+📈 Overall Completion Rate
+●●●●●●●●●●●○○○○○○○○○ 57%
+```
 
 ## Setup Instructions
 
