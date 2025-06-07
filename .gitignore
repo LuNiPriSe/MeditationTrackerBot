@@ -15,4 +15,9 @@ npm-debug.log
 # Environment/secrets
 .env
 .env.*
-credentials.json 
+credentials.json
+
+# Large icon files (can be added separately if needed)
+*.png
+*.jpg
+*.jpeg 
