@@ -267,45 +267,8 @@ function getAllUniqueUsers(sheet) {
     for (let i = 1; i < rows.length; i++) {
         const userId = String(rows[i][1] || '').trim();
         if (userId && !users[userId]) {
-            // Check if this is new structure (6 columns) or old structure (5 columns)
-            const isNewStructure = rows[i].length >= 6;
-
-            if (isNewStructure) {
-                // New structure: use firstName if available, otherwise process username
-                const firstName = (rows[i][2] || '').trim();
-                const username = (rows[i][3] || '').trim();
-
-                if (firstName) {
-                    // Real firstName from Telegram API
-                    users[userId] = firstName;
-                } else {
-                    // Fallback: process username for old data that hasn't been updated yet
-                    let displayName = username;
-                    if (displayName.startsWith('@')) {
-                        displayName = displayName.substring(1); // Remove @
-                        if (displayName.includes('_') || displayName.includes('.')) {
-                            const parts = displayName.split(/[_.]/);
-                            displayName = parts[0];
-                        }
-                        displayName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase();
-                    }
-                    users[userId] = displayName;
-                }
-            } else {
-                // Old structure: use old logic for backwards compatibility
-                const storedName = (rows[i][2] || '').trim();
-                let displayName = storedName;
-                if (displayName.startsWith('@')) {
-                    // Fallback for old @usernames
-                    displayName = displayName.substring(1); // Remove @
-                    if (displayName.includes('_') || displayName.includes('.')) {
-                        const parts = displayName.split(/[_.]/);
-                        displayName = parts[0];
-                    }
-                    displayName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase();
-                }
-                users[userId] = displayName;
-            }
+            // Use the new getFirstName helper that checks sheet first, then Telegram API
+            users[userId] = getFirstName(userId, sheet);
         }
     }
     return users; // {userId: displayName}
@@ -809,5 +772,57 @@ function migrateSheetToNewStructure() {
     } catch (error) {
         console.error('Error during migration:', error);
         return `Migration failed: ${error.message}`;
+    }
+}
+
+// Helper function to get first name: check sheet first, then Telegram API if needed
+function getFirstName(userId, sheet) {
+    // First, check if we already have the firstName in the sheet
+    const rows = sheet.getDataRange().getValues();
+    for (let i = 1; i < rows.length; i++) {
+        if (String(rows[i][1]) === String(userId)) {
+            const isNewStructure = rows[i].length >= 6;
+            if (isNewStructure) {
+                const storedFirstName = (rows[i][2] || '').trim();
+                if (storedFirstName) {
+                    return storedFirstName; // Found cached firstName
+                }
+            }
+        }
+    }
+
+    // Not found in sheet, query Telegram API
+    try {
+        const response = UrlFetchApp.fetch(`${TELEGRAM_API_URL}getChat?chat_id=${userId}`);
+        const data = JSON.parse(response.getContentText());
+
+        if (data.ok && data.result) {
+            const firstName = data.result.first_name || data.result.username || `User${userId}`;
+
+            // Cache the firstName in the sheet for future use
+            cacheFirstNameInSheet(userId, firstName, sheet);
+
+            return firstName;
+        }
+    } catch (error) {
+        console.error('Error fetching first name from Telegram API:', error);
+    }
+
+    // Fallback if API call fails
+    return `User${userId}`;
+}
+
+// Helper function to cache firstName in the sheet
+function cacheFirstNameInSheet(userId, firstName, sheet) {
+    const rows = sheet.getDataRange().getValues();
+    for (let i = 1; i < rows.length; i++) {
+        if (String(rows[i][1]) === String(userId)) {
+            const isNewStructure = rows[i].length >= 6;
+            if (isNewStructure) {
+                // Update the firstName in column 3 (0-indexed: column 2)
+                sheet.getRange(i + 1, 3).setValue(firstName);
+                return;
+            }
+        }
     }
 }
