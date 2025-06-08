@@ -48,8 +48,9 @@ function doPost(e) {
         // Remove @botusername if present (e.g., /status@DhammaTrackerBot -> /status)
         const command = text.split(' ')[0].split('@')[0].toLowerCase();
         const chatId = message.chat.id;
-        // Prioritize first name, fallback to username with @, then user ID
-        const username = message.from.first_name || (message.from.username ? '@' + message.from.username : `User${message.from.id}`);
+        // Extract first name and username separately
+        const firstName = message.from.first_name || (message.from.username ? message.from.username.charAt(0).toUpperCase() + message.from.username.slice(1).toLowerCase() : `User${message.from.id}`);
+        const username = message.from.username ? '@' + message.from.username : firstName;
         const userId = message.from.id;
 
         const now = new Date();
@@ -65,7 +66,7 @@ function doPost(e) {
         if (command === '/start') {
             // Register chat if not already registered
             if (!isChatRegistered(chatId)) {
-                const result = registerChat(chatId, message.chat.title || username);
+                const result = registerChat(chatId, message.chat.title || firstName);
                 console.log('Registration result for /start:', result);
             }
             // Show help message
@@ -108,11 +109,11 @@ function doPost(e) {
             responseText = getPersonalAnalysisMessage(sheet, userId, command.includes('micrecimiento') || command.includes('mianalisis') ? 'es' : 'en');
         } else if (command === '/morning' || command === '/meditate_morning' || command === '/mañana' || command === '/meditar_mañana') {
             const isSpanish = command === '/mañana' || command === '/meditar_mañana';
-            const result = logMeditation(sheet, date, username, 'morning', time, userId, isSpanish);
+            const result = logMeditation(sheet, date, firstName, username, 'morning', time, userId, isSpanish);
             responseText = result.message;
         } else if (command === '/evening' || command === '/meditate_evening' || command === '/tarde' || command === '/meditar_tarde') {
             const isSpanish = command === '/tarde' || command === '/meditar_tarde';
-            const result = logMeditation(sheet, date, username, 'evening', time, userId, isSpanish);
+            const result = logMeditation(sheet, date, firstName, username, 'evening', time, userId, isSpanish);
             responseText = result.message;
         } else if (command === '/dailyvibrations' || command === '/vibreshoy' || command === '/status' || command === '/estado') {
             responseText = getSimpleStatus(sheet, date, command.includes('vibreshoy') || command.includes('estado') ? 'es' : 'en');
@@ -173,7 +174,7 @@ function getRegisteredChats() {
     return data.slice(1).map(row => row[0]); // Return array of chat IDs
 }
 
-function logMeditation(sheet, date, username, type, time, userId, isSpanish = false) {
+function logMeditation(sheet, date, firstName, username, type, time, userId, isSpanish = false) {
     const dataRange = sheet.getDataRange();
     const rows = dataRange.getValues();
 
@@ -194,8 +195,10 @@ function logMeditation(sheet, date, username, type, time, userId, isSpanish = fa
 
     // Check if this meditation session is already logged BEFORE creating a new row
     if (existingRow) {
-        const morningTime = existingRow[3] || '';
-        const eveningTime = existingRow[4] || '';
+        // Handle both old (5-column) and new (6-column) structures
+        const isOldStructure = existingRow.length === 5;
+        const morningTime = isOldStructure ? (existingRow[3] || '') : (existingRow[4] || '');
+        const eveningTime = isOldStructure ? (existingRow[4] || '') : (existingRow[5] || '');
         const existingValue = type === 'morning' ? morningTime : eveningTime;
 
         if (existingValue && existingValue !== '') {
@@ -207,8 +210,8 @@ function logMeditation(sheet, date, username, type, time, userId, isSpanish = fa
                 (type === 'morning' ? 'morning meditation' : 'evening meditation');
 
             const message = isSpanish ?
-                `${username}, ya compartiste tu ${sessionName} hoy a las ${formattedTime}! 🌸✨ Tu dedicación es hermosa.` :
-                `${username}, you've already shared your ${sessionName} today at ${formattedTime}! 🌸✨ Your dedication is beautiful.`;
+                `${firstName}, ya compartiste tu ${sessionName} hoy a las ${formattedTime}! 🌸✨ Tu dedicación es hermosa.` :
+                `${firstName}, you've already shared your ${sessionName} today at ${formattedTime}! 🌸✨ Your dedication is beautiful.`;
 
             return {
                 success: false,
@@ -217,20 +220,27 @@ function logMeditation(sheet, date, username, type, time, userId, isSpanish = fa
         }
     }
 
-    // If no row exists, create one
+    // If no row exists, create one with new 6-column structure
     if (userRowIndex === -1) {
-        sheet.appendRow([date, userId, username, '', '']);
+        sheet.appendRow([date, userId, firstName, username, '', '']);
         userRowIndex = sheet.getLastRow();
     } else {
-        // Update the stored username with the current first name (fixes old @usernames)
-        const currentStoredName = existingRow[2] || '';
-        if (currentStoredName !== username) {
-            sheet.getRange(userRowIndex, 3).setValue(username); // Column 3 is the username column
+        // Update stored firstName and username (handles both old and new structures)
+        const currentColumns = sheet.getRange(userRowIndex, 1, 1, 6).getValues()[0];
+        if (currentColumns.length === 6) {
+            // New structure: update firstName (col 3) and username (col 4)
+            sheet.getRange(userRowIndex, 3).setValue(firstName);
+            sheet.getRange(userRowIndex, 4).setValue(username);
+        } else {
+            // Old structure: just update the username column (col 3)
+            sheet.getRange(userRowIndex, 3).setValue(firstName);
         }
     }
 
-    // Log the meditation
-    const columnIndex = type === 'morning' ? 4 : 5; // 1-based: Morning=4, Evening=5
+    // Log the meditation (adjust column index based on structure)
+    const hasHeaders = sheet.getRange(1, 1, 1, 6).getValues()[0];
+    const isNewStructure = hasHeaders.length === 6;
+    const columnIndex = type === 'morning' ? (isNewStructure ? 5 : 4) : (isNewStructure ? 6 : 5);
     sheet.getRange(userRowIndex, columnIndex).setValue(time);
 
     // Format current time for success message using the consistent formatTime function
@@ -241,8 +251,8 @@ function logMeditation(sheet, date, username, type, time, userId, isSpanish = fa
         (type === 'morning' ? 'morning meditation' : 'evening meditation');
 
     const successMessage = isSpanish ?
-        `🌸 ${username}, hermosa ${sessionName} completada a las ${formattedCurrentTime}! Gracias por nutrir tu paz interior 💚` :
-        `🌸 ${username}, beautiful ${sessionName} completed at ${formattedCurrentTime}! Thank you for nurturing your inner peace 💚`;
+        `🌸 ${firstName}, hermosa ${sessionName} completada a las ${formattedCurrentTime}! Gracias por nutrir tu paz interior 💚` :
+        `🌸 ${firstName}, beautiful ${sessionName} completed at ${formattedCurrentTime}! Thank you for nurturing your inner peace 💚`;
 
     return {
         success: true,
@@ -256,22 +266,28 @@ function getAllUniqueUsers(sheet) {
     const users = {};
     for (let i = 1; i < rows.length; i++) {
         const userId = String(rows[i][1] || '').trim();
-        const storedName = (rows[i][2] || '').trim();
         if (userId && !users[userId]) {
-            // Apply first name priority logic for any remaining @usernames
-            let displayName = storedName;
-            if (displayName.startsWith('@')) {
-                // Fallback for any remaining @usernames that haven't been updated yet
-                displayName = displayName.substring(1); // Remove @
-                // If it looks like a combination of words, take first part
-                if (displayName.includes('_') || displayName.includes('.')) {
-                    const parts = displayName.split(/[_.]/);
-                    displayName = parts[0];
+            // Check if this is new structure (6 columns) or old structure (5 columns)
+            const isNewStructure = rows[i].length >= 6;
+
+            if (isNewStructure) {
+                // New structure: use firstName (column 2, 0-indexed)
+                users[userId] = (rows[i][2] || '').trim();
+            } else {
+                // Old structure: use old logic for backwards compatibility
+                const storedName = (rows[i][2] || '').trim();
+                let displayName = storedName;
+                if (displayName.startsWith('@')) {
+                    // Fallback for old @usernames
+                    displayName = displayName.substring(1); // Remove @
+                    if (displayName.includes('_') || displayName.includes('.')) {
+                        const parts = displayName.split(/[_.]/);
+                        displayName = parts[0];
+                    }
+                    displayName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase();
                 }
-                // Capitalize first letter
-                displayName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase();
+                users[userId] = displayName;
             }
-            users[userId] = displayName;
         }
     }
     return users; // {userId: displayName}
@@ -347,8 +363,10 @@ function getSimpleStatus(sheet, date, lang) {
                     rowDate = Utilities.formatDate(rowDate, 'GMT+2', 'yyyy-MM-dd');
                 }
                 if (rowDate === date && String(rows[i][1]) === userId) {
-                    userMorning = rows[i][3] || '';
-                    userEvening = rows[i][4] || '';
+                    // Handle both old (5-column) and new (6-column) structures
+                    const isOldStructure = rows[i].length === 5;
+                    userMorning = isOldStructure ? (rows[i][3] || '') : (rows[i][4] || '');
+                    userEvening = isOldStructure ? (rows[i][4] || '') : (rows[i][5] || '');
                     break;
                 }
             }
@@ -464,18 +482,23 @@ function getPersonalAnalysisMessage(sheet, userId, lang) {
     });
     userDates.forEach(date => {
         const row = rowMap[date];
-        const morning = row ? row[3] : '';
-        const evening = row ? row[4] : '';
-        const hasMorning = morning && morning !== '' && morning !== null;
-        const hasEvening = evening && evening !== '' && evening !== null;
-        if (hasMorning && hasEvening) {
-            bothSessions++;
-        } else if (hasMorning) {
-            morningOnly++;
-        } else if (hasEvening) {
-            eveningOnly++;
-        } else {
-            noSessions++;
+        if (row) {
+            // Handle both old (5-column) and new (6-column) structures
+            const isOldStructure = row.length === 5;
+            const morning = isOldStructure ? (row[3] || '') : (row[4] || '');
+            const evening = isOldStructure ? (row[4] || '') : (row[5] || '');
+            const hasMorning = morning && morning !== '' && morning !== null;
+            const hasEvening = evening && evening !== '' && evening !== null;
+
+            if (hasMorning && hasEvening) {
+                bothSessions++;
+            } else if (hasMorning) {
+                morningOnly++;
+            } else if (hasEvening) {
+                eveningOnly++;
+            } else {
+                noSessions++;
+            }
         }
     });
     const totalDays = userDates.length;
@@ -726,4 +749,63 @@ function isChatRegistered(chatId) {
         }
     }
     return false;
+}
+
+// ONE-TIME MIGRATION FUNCTION: Add firstName column and migrate existing data
+function migrateSheetToNewStructure() {
+    try {
+        const ss = SpreadsheetApp.openById(SHEET_ID);
+        const sheet = ss.getSheetByName('MeditationLog') || ss.getActiveSheet();
+
+        const dataRange = sheet.getDataRange();
+        const rows = dataRange.getValues();
+
+        // Check if migration is needed (if we still have old 5-column structure)
+        if (rows.length > 0 && rows[0].length === 5) {
+            console.log('Starting migration to new sheet structure...');
+
+            // Step 1: Insert new column for firstName after userId
+            sheet.insertColumnAfter(2); // Insert after column B (userId)
+
+            // Step 2: Update headers
+            sheet.getRange(1, 1, 1, 6).setValues([['Date', 'User ID', 'First Name', 'Username', 'Morning', 'Evening']]);
+            sheet.getRange(1, 1, 1, 6).setFontWeight('bold');
+
+            // Step 3: Migrate existing data
+            for (let i = 2; i <= rows.length; i++) { // Start from row 2 (skip header)
+                const oldUsername = sheet.getRange(i, 4).getValue() || ''; // Column D in new structure
+                let firstName = '';
+                let username = oldUsername;
+
+                // Extract firstName from old username
+                if (oldUsername.startsWith('@')) {
+                    // Extract a reasonable first name from @username
+                    let extracted = oldUsername.substring(1); // Remove @
+                    if (extracted.includes('_') || extracted.includes('.')) {
+                        const parts = extracted.split(/[_.]/);
+                        extracted = parts[0];
+                    }
+                    firstName = extracted.charAt(0).toUpperCase() + extracted.slice(1).toLowerCase();
+                    username = oldUsername; // Keep the original @username
+                } else {
+                    // If it's already a first name, use it
+                    firstName = oldUsername;
+                }
+
+                // Set the firstName in column C
+                sheet.getRange(i, 3).setValue(firstName);
+                // Keep the original username in column D
+                sheet.getRange(i, 4).setValue(username);
+            }
+
+            console.log('Migration completed successfully!');
+            return 'Migration completed! Sheet now has separate firstName and username columns.';
+        } else {
+            return 'Sheet structure is already up to date.';
+        }
+
+    } catch (error) {
+        console.error('Error during migration:', error);
+        return `Migration failed: ${error.message}`;
+    }
 }
