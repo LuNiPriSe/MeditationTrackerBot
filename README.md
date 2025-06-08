@@ -162,7 +162,8 @@ Execute these functions in Google Apps Script (Run > Function):
 
 1. **`setupSheet()`** - Creates proper column headers in your Google Sheet:
 
-   - Date, User ID, Username, Morning Time, Evening Time
+   - **For new installations**: Date, User ID, First Name, Username, Morning Time, Evening Time
+   - **Note**: If updating from older version, run migration instead
 
 2. **`setupReminders()`** - Configures automated daily reminders:
    - Morning reminder at 8:00 AM
@@ -189,6 +190,124 @@ https://api.telegram.org/bot[YOUR_BOT_TOKEN]/setWebhook?url=[YOUR_WEB_APP_URL]
 
 - **`cleanupDuplicateRows()`** - Remove duplicate entries (run once if needed)
 
+## 🔄 Updating Your Bot
+
+When new features are released, follow these steps to update your existing bot:
+
+### Step 1: Check if Migration is Needed
+
+First, determine if your sheet structure needs to be updated. Check your Google Sheet:
+
+- **Old structure (5 columns)**: `Date | User ID | Username | Morning | Evening`
+- **New structure (6 columns)**: `Date | User ID | First Name | Username | Morning | Evening`
+
+If you have the old 5-column structure, **migration is required** for the latest features.
+
+### Step 2: Backup Your Data
+
+1. **Open your Google Sheet**
+2. **File > Make a copy** - name it "MeditationBot*Backup*[DATE]"
+3. **Keep this backup safe** - contains all your meditation history
+
+### Step 3: Update the Code
+
+1. **Open your Google Apps Script project**
+2. **Copy your existing constants** (save these somewhere safe):
+   ```javascript
+   const TELEGRAM_BOT_TOKEN = "your_existing_token";
+   const SHEET_ID = "your_existing_sheet_id";
+   ```
+3. **Replace all code** with the new `MeditationTrackerBot.js` content
+4. **Restore your constants** at the top of the new code:
+   ```javascript
+   const TELEGRAM_BOT_TOKEN = "your_existing_token"; // Keep your token!
+   const SHEET_ID = "your_existing_sheet_id"; // Keep your sheet ID!
+   ```
+5. **Save the project** (Ctrl+S or Cmd+S)
+
+### Step 4: Run Migration (if needed)
+
+If you need to migrate from 5-column to 6-column structure:
+
+1. **In Google Apps Script**, find the function dropdown (usually shows "doPost")
+2. **Select `migrateSheetToNewStructure`** from the dropdown
+3. **Click the Run button** ▶️
+4. **Grant permissions** if prompted (same permissions as before)
+5. **Check execution log** - should show "Migration completed successfully!"
+
+**What the migration does:**
+
+- Adds a "First Name" column after "User ID"
+- Leaves first names empty (will be populated with real Telegram names when users interact)
+- Preserves all existing data
+- Updates headers to new structure
+
+### Step 5: Update Webhook (if needed)
+
+If you created a new deployment or your Web App URL changed:
+
+1. **In Google Apps Script**: Deploy > Manage deployments
+2. **Copy the current Web App URL**
+3. **Update the webhook** using this URL (replace with your details):
+   ```
+   https://api.telegram.org/bot[YOUR_BOT_TOKEN]/setWebhook?url=[YOUR_NEW_WEB_APP_URL]
+   ```
+
+### Step 6: Test the Update
+
+1. **Send `/start`** to your bot to ensure it's working
+2. **Try a command** like `/dailyvibrations` to test functionality
+3. **Check that first names appear** (may take a moment for Telegram API lookup)
+
+### Common Update Scenarios
+
+#### ✅ Minor Updates (new features, bug fixes)
+
+- Just update the code (Steps 1-3)
+- No migration needed
+- Webhook stays the same
+
+#### ⚠️ Major Updates (new sheet structure)
+
+- Update code + run migration (Steps 1-4)
+- Check if new webhook needed (Step 5)
+
+#### 🆕 First Time Installing Latest Version
+
+- Follow the main setup instructions instead
+- Migration not needed for fresh installations
+
+### Troubleshooting Updates
+
+#### "Migration completed" but features not working
+
+- Check that webhook is still active
+- Verify constants are correctly set
+- Try redeploying the Web App
+
+#### Bot not responding after update
+
+- Check execution log for errors
+- Verify webhook URL is correct
+- Ensure permissions are granted
+
+#### Old data missing after migration
+
+- Check your backup copy
+- Migration preserves data - check the new 6-column structure
+
+#### First names still showing as @usernames
+
+- This is normal initially
+- Real first names appear as users interact with the updated bot
+- After users log meditations, status will show proper first names
+
+### 🔄 Stay Updated
+
+- **Watch the GitHub repository** for new releases
+- **Follow the changelog** for breaking changes
+- **Test updates** in a copy before applying to production
+
 ## Technical Architecture
 
 ### Google Apps Script Integration
@@ -201,10 +320,12 @@ https://api.telegram.org/bot[YOUR_BOT_TOKEN]/setWebhook?url=[YOUR_WEB_APP_URL]
 ### Data Storage (Google Sheets)
 
 - **MeditationLog Sheet**: Stores all meditation sessions with timestamps
-  - Columns: Date, User ID, Username, Morning Time, Evening Time
+  - **Latest structure (6 columns)**: Date, User ID, First Name, Username, Morning Time, Evening Time
+  - **Legacy structure (5 columns)**: Date, User ID, Username, Morning Time, Evening Time
 - **ChatIDs Sheet**: Manages registered chats for reminders
   - Columns: Chat ID, Chat Name, Registration Date
 - Automatic data validation and duplicate prevention
+- Real Telegram first name caching and lookup
 
 ### Reminder System
 
