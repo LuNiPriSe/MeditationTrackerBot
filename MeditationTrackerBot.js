@@ -221,6 +221,12 @@ function logMeditation(sheet, date, username, type, time, userId, isSpanish = fa
     if (userRowIndex === -1) {
         sheet.appendRow([date, userId, username, '', '']);
         userRowIndex = sheet.getLastRow();
+    } else {
+        // Update the stored username with the current first name (fixes old @usernames)
+        const currentStoredName = existingRow[2] || '';
+        if (currentStoredName !== username) {
+            sheet.getRange(userRowIndex, 3).setValue(username); // Column 3 is the username column
+        }
     }
 
     // Log the meditation
@@ -252,10 +258,10 @@ function getAllUniqueUsers(sheet) {
         const userId = String(rows[i][1] || '').trim();
         const storedName = (rows[i][2] || '').trim();
         if (userId && !users[userId]) {
-            // Apply first name priority logic to stored names
+            // Apply first name priority logic for any remaining @usernames
             let displayName = storedName;
             if (displayName.startsWith('@')) {
-                // If it's a @username, try to extract a reasonable display name
+                // Fallback for any remaining @usernames that haven't been updated yet
                 displayName = displayName.substring(1); // Remove @
                 // If it looks like a combination of words, take first part
                 if (displayName.includes('_') || displayName.includes('.')) {
