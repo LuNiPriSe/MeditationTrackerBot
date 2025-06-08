@@ -75,35 +75,11 @@ function doPost(e) {
         } else if (command === '/morning' || command === '/meditate_morning' || command === '/mañana' || command === '/meditar_mañana') {
             const isSpanish = command === '/mañana' || command === '/meditar_mañana';
             const result = logMeditation(sheet, date, username, 'morning', time, userId, isSpanish);
-            if (isSpanish) {
-                if (result.success) {
-                    responseText = `🌅 ${username} ¡Hermosa meditación matutina completada a las ${time}! Gracias por nutrir tu paz interior 💚`;
-                } else {
-                    responseText = `🌸 ${result.message}`;
-                }
-            } else {
-                if (result.success) {
-                    responseText = `🌅 ${username} beautiful morning meditation completed at ${time}! Thank you for nurturing your inner peace 💚`;
-                } else {
-                    responseText = `🌸 ${result.message}`;
-                }
-            }
+            responseText = result.message;
         } else if (command === '/evening' || command === '/meditate_evening' || command === '/tarde' || command === '/meditar_tarde') {
             const isSpanish = command === '/tarde' || command === '/meditar_tarde';
             const result = logMeditation(sheet, date, username, 'evening', time, userId, isSpanish);
-            if (isSpanish) {
-                if (result.success) {
-                    responseText = `🌙 ${username} ¡Meditación vespertina llena de serenidad completada a las ${time}! Tu dedicación inspira 💜`;
-                } else {
-                    responseText = `🌸 ${result.message}`;
-                }
-            } else {
-                if (result.success) {
-                    responseText = `🌙 ${username} serene evening meditation completed at ${time}! Your dedication inspires 💜`;
-                } else {
-                    responseText = `🌸 ${result.message}`;
-                }
-            }
+            responseText = result.message;
         } else if (command === '/dailyvibrations' || command === '/vibreshoy' || command === '/status' || command === '/estado') {
             responseText = getSimpleStatus(sheet, date, command.includes('vibreshoy') || command.includes('estado') ? 'es' : 'en');
         } else if (command === '/ourgift' || command === '/nuestroregalo' || command === '/analysis' || command === '/analisis') {
@@ -169,6 +145,7 @@ function logMeditation(sheet, date, username, type, time, userId, isSpanish = fa
 
     // Find existing row for this user and date (by userId)
     let userRowIndex = -1;
+    let existingRow = null;
     for (let i = 1; i < rows.length; i++) {
         let rowDateString = rows[i][0];
         if (rows[i][0] instanceof Date) {
@@ -176,7 +153,34 @@ function logMeditation(sheet, date, username, type, time, userId, isSpanish = fa
         }
         if (rowDateString === date && String(rows[i][1]) === String(userId)) {
             userRowIndex = i + 1; // Convert to 1-based for sheet operations
+            existingRow = rows[i];
             break;
+        }
+    }
+
+    // Check if this meditation session is already logged BEFORE creating a new row
+    if (existingRow) {
+        const morningTime = existingRow[3] || '';
+        const eveningTime = existingRow[4] || '';
+        const existingValue = type === 'morning' ? morningTime : eveningTime;
+
+        if (existingValue && existingValue !== '') {
+            // Format the existing time nicely
+            const formattedTime = typeof existingValue === 'string' ? existingValue :
+                Utilities.formatDate(new Date(`1970-01-01T${existingValue}`), 'GMT+2', 'HH:mm');
+
+            const sessionName = isSpanish ?
+                (type === 'morning' ? 'meditación matutina' : 'meditación vespertina') :
+                (type === 'morning' ? 'morning meditation' : 'evening meditation');
+
+            const message = isSpanish ?
+                `${username}, ya compartiste tu ${sessionName} hoy a las ${formattedTime}! 🌸✨ Tu dedicación es hermosa.` :
+                `${username}, you've already shared your ${sessionName} today at ${formattedTime}! 🌸✨ Your dedication is beautiful.`;
+
+            return {
+                success: false,
+                message: message
+            };
         }
     }
 
@@ -186,35 +190,24 @@ function logMeditation(sheet, date, username, type, time, userId, isSpanish = fa
         userRowIndex = sheet.getLastRow();
     }
 
-    // Check if this meditation session is already logged
-    const columnIndex = type === 'morning' ? 4 : 5; // 1-based: Morning=4, Evening=5
-    const existingValue = sheet.getRange(userRowIndex, columnIndex).getValue();
-
-    if (existingValue && existingValue !== '') {
-        // Format the existing time nicely
-        const formattedTime = typeof existingValue === 'string' ? existingValue :
-            Utilities.formatDate(new Date(`1970-01-01T${existingValue}`), 'GMT+2', 'HH:mm');
-
-        const sessionName = isSpanish ?
-            (type === 'morning' ? 'meditación matutina' : 'meditación vespertina') :
-            (type === 'morning' ? 'morning meditation' : 'evening meditation');
-
-        const message = isSpanish ?
-            `${username}, ya compartiste tu ${sessionName} hoy a las ${formattedTime}! 🌸✨ Tu dedicación es hermosa.` :
-            `${username}, you've already shared your ${sessionName} today at ${formattedTime}! 🌸✨ Your dedication is beautiful.`;
-
-        return {
-            success: false,
-            message: message
-        };
-    }
-
     // Log the meditation
+    const columnIndex = type === 'morning' ? 4 : 5; // 1-based: Morning=4, Evening=5
     sheet.getRange(userRowIndex, columnIndex).setValue(time);
+
+    // Format current time for success message
+    const formattedCurrentTime = Utilities.formatDate(new Date(`1970-01-01T${time}`), 'GMT+2', 'HH:mm');
+
+    const sessionName = isSpanish ?
+        (type === 'morning' ? 'meditación matutina' : 'meditación vespertina') :
+        (type === 'morning' ? 'morning meditation' : 'evening meditation');
+
+    const successMessage = isSpanish ?
+        `🌸 ${username}, hermosa ${sessionName} completada a las ${formattedCurrentTime}! Gracias por nutrir tu paz interior 💚` :
+        `🌸 ${username}, beautiful ${sessionName} completed at ${formattedCurrentTime}! Thank you for nurturing your inner peace 💚`;
 
     return {
         success: true,
-        message: `${type.charAt(0).toUpperCase() + type.slice(1)} meditation shared with love!`
+        message: successMessage
     };
 }
 
