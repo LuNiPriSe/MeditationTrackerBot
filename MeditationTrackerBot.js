@@ -1,7 +1,6 @@
 const TELEGRAM_BOT_TOKEN = 'YOUR_BOT_TOKEN';
 const TELEGRAM_API_URL = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/`;
 const SHEET_ID = 'YOUR_SHEET_ID';
-const ADMIN_USER_ID = 'YOUR_ADMIN_USER_ID'; // Replace with your Telegram user ID for migration access
 
 // Helper function to format time consistently 
 function formatTime(timeValue, isSpanish = false) {
@@ -49,8 +48,8 @@ function doPost(e) {
         // Remove @botusername if present (e.g., /status@DhammaTrackerBot -> /status)
         const command = text.split(' ')[0].split('@')[0].toLowerCase();
         const chatId = message.chat.id;
-        // Extract first name and username separately
-        const firstName = message.from.first_name || (message.from.username ? message.from.username.charAt(0).toUpperCase() + message.from.username.slice(1).toLowerCase() : `User${message.from.id}`);
+        // Extract real first name from Telegram API, with fallbacks
+        const firstName = message.from.first_name || message.from.username || `User${message.from.id}`;
         const username = message.from.username ? '@' + message.from.username : firstName;
         const userId = message.from.id;
 
@@ -120,9 +119,6 @@ function doPost(e) {
             responseText = getSimpleStatus(sheet, date, command.includes('vibreshoy') || command.includes('estado') ? 'es' : 'en');
         } else if (command === '/ourgift' || command === '/nuestroregalo' || command === '/analysis' || command === '/analisis') {
             responseText = getGeneralAnalysisMessage(sheet, command.includes('nuestroregalo') || command.includes('analisis') ? 'es' : 'en');
-        } else if (command === '/migrate' && userId === ADMIN_USER_ID) {
-            // Admin-only migration command
-            responseText = migrateSheetToNewStructure();
         } else {
             responseText = 'Let\'s explore together! 🌱 Send /help or /ayuda for our peaceful commands.';
         }
@@ -756,6 +752,7 @@ function isChatRegistered(chatId) {
 }
 
 // ONE-TIME MIGRATION FUNCTION: Add firstName column and migrate existing data
+// To run this: Open Apps Script editor, go to the function dropdown, select 'migrateSheetToNewStructure', and click Run
 function migrateSheetToNewStructure() {
     try {
         const ss = SpreadsheetApp.openById(SHEET_ID);
