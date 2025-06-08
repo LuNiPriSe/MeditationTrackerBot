@@ -2,6 +2,40 @@ const TELEGRAM_BOT_TOKEN = 'YOUR_BOT_TOKEN';
 const TELEGRAM_API_URL = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/`;
 const SHEET_ID = 'YOUR_SHEET_ID';
 
+// Helper function to format time consistently 
+function formatTime(timeValue, isSpanish = false) {
+    if (!timeValue || timeValue === '') return '';
+
+    // If it's already a string in HH:mm or HH:mm:ss format, extract HH:mm
+    if (typeof timeValue === 'string') {
+        // Handle formats like "12:06:00" or "12:06"
+        const timeMatch = timeValue.match(/^(\d{1,2}):(\d{2})/);
+        if (timeMatch) {
+            const hours = timeMatch[1].padStart(2, '0');
+            const minutes = timeMatch[2];
+            return `${hours}:${minutes}`;
+        }
+        return timeValue; // Return as-is if no match
+    }
+
+    // If it's a Date object, format it properly
+    if (timeValue instanceof Date) {
+        return Utilities.formatDate(timeValue, 'GMT+2', 'HH:mm');
+    }
+
+    // Fallback for other types
+    return String(timeValue);
+}
+
+// Helper function to get display name with first name priority
+function getDisplayName(userRow) {
+    // userRow format: [date, userId, username, morning, evening]
+    // But we need to get the actual name from the message object
+    // This function will be used when we have the full user data
+    const storedName = userRow[2] || '';
+    return storedName; // Will be the properly formatted name from message
+}
+
 function doPost(e) {
     try {
         const data = JSON.parse(e.postData.contents);
@@ -165,9 +199,8 @@ function logMeditation(sheet, date, username, type, time, userId, isSpanish = fa
         const existingValue = type === 'morning' ? morningTime : eveningTime;
 
         if (existingValue && existingValue !== '') {
-            // Format the existing time nicely
-            const formattedTime = typeof existingValue === 'string' ? existingValue :
-                Utilities.formatDate(new Date(`1970-01-01T${existingValue}`), 'GMT+2', 'HH:mm');
+            // Use the improved formatTime function
+            const formattedTime = formatTime(existingValue, isSpanish);
 
             const sessionName = isSpanish ?
                 (type === 'morning' ? 'meditación matutina' : 'meditación vespertina') :
@@ -194,8 +227,8 @@ function logMeditation(sheet, date, username, type, time, userId, isSpanish = fa
     const columnIndex = type === 'morning' ? 4 : 5; // 1-based: Morning=4, Evening=5
     sheet.getRange(userRowIndex, columnIndex).setValue(time);
 
-    // Format current time for success message
-    const formattedCurrentTime = Utilities.formatDate(new Date(`1970-01-01T${time}`), 'GMT+2', 'HH:mm');
+    // Format current time for success message using the consistent formatTime function
+    const formattedCurrentTime = formatTime(time, isSpanish);
 
     const sessionName = isSpanish ?
         (type === 'morning' ? 'meditación matutina' : 'meditación vespertina') :
@@ -211,18 +244,19 @@ function logMeditation(sheet, date, username, type, time, userId, isSpanish = fa
     };
 }
 
-// Helper: Get all unique users ever
+// Helper: Get all unique users ever with proper name handling
 function getAllUniqueUsers(sheet) {
     const rows = sheet.getDataRange().getValues();
     const users = {};
     for (let i = 1; i < rows.length; i++) {
         const userId = String(rows[i][1] || '').trim();
-        const username = (rows[i][2] || '').trim();
+        const storedName = (rows[i][2] || '').trim();
         if (userId && !users[userId]) {
-            users[userId] = username;
+            // The stored name should already be the properly formatted first name or username
+            users[userId] = storedName;
         }
     }
-    return users; // {userId: username}
+    return users; // {userId: displayName}
 }
 
 // Helper: Get all unique dates ever
