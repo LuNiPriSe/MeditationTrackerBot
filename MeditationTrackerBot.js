@@ -271,8 +271,26 @@ function getAllUniqueUsers(sheet) {
             const isNewStructure = rows[i].length >= 6;
 
             if (isNewStructure) {
-                // New structure: use firstName (column 2, 0-indexed)
-                users[userId] = (rows[i][2] || '').trim();
+                // New structure: use firstName if available, otherwise process username
+                const firstName = (rows[i][2] || '').trim();
+                const username = (rows[i][3] || '').trim();
+
+                if (firstName) {
+                    // Real firstName from Telegram API
+                    users[userId] = firstName;
+                } else {
+                    // Fallback: process username for old data that hasn't been updated yet
+                    let displayName = username;
+                    if (displayName.startsWith('@')) {
+                        displayName = displayName.substring(1); // Remove @
+                        if (displayName.includes('_') || displayName.includes('.')) {
+                            const parts = displayName.split(/[_.]/);
+                            displayName = parts[0];
+                        }
+                        displayName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase();
+                    }
+                    users[userId] = displayName;
+                }
             } else {
                 // Old structure: use old logic for backwards compatibility
                 const storedName = (rows[i][2] || '').trim();
@@ -772,31 +790,14 @@ function migrateSheetToNewStructure() {
             sheet.getRange(1, 1, 1, 6).setValues([['Date', 'User ID', 'First Name', 'Username', 'Morning', 'Evening']]);
             sheet.getRange(1, 1, 1, 6).setFontWeight('bold');
 
-            // Step 3: Migrate existing data
+            // Step 3: Migrate existing data - leave firstName empty, real names will come from Telegram API
             for (let i = 2; i <= rows.length; i++) { // Start from row 2 (skip header)
                 const oldUsername = sheet.getRange(i, 4).getValue() || ''; // Column D in new structure
-                let firstName = '';
-                let username = oldUsername;
 
-                // Extract firstName from old username
-                if (oldUsername.startsWith('@')) {
-                    // Extract a reasonable first name from @username
-                    let extracted = oldUsername.substring(1); // Remove @
-                    if (extracted.includes('_') || extracted.includes('.')) {
-                        const parts = extracted.split(/[_.]/);
-                        extracted = parts[0];
-                    }
-                    firstName = extracted.charAt(0).toUpperCase() + extracted.slice(1).toLowerCase();
-                    username = oldUsername; // Keep the original @username
-                } else {
-                    // If it's already a first name, use it
-                    firstName = oldUsername;
-                }
-
-                // Set the firstName in column C
-                sheet.getRange(i, 3).setValue(firstName);
+                // Leave firstName empty - it will be populated with real Telegram first names when users interact
+                sheet.getRange(i, 3).setValue(''); // Empty firstName column
                 // Keep the original username in column D
-                sheet.getRange(i, 4).setValue(username);
+                sheet.getRange(i, 4).setValue(oldUsername);
             }
 
             console.log('Migration completed successfully!');
