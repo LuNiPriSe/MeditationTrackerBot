@@ -4,6 +4,55 @@ A bilingual Telegram meditation community bot built on Google Apps Script that h
 
 ![Bot Icon](DhammaBotIcon.png)
 
+## 📑 Table of Contents
+
+- [Features](#features)
+  - [🌍 Bilingual Support](#-bilingual-support)
+  - [🌸 Meditation Sharing](#-meditation-sharing)
+  - [🌿 Community Insights & Growth](#-community-insights--growth)
+  - [🎨 Enhanced Visual Interface](#-enhanced-visual-interface)
+  - [🔔 Automated Reminders](#-automated-reminders)
+  - [🔐 User Management](#-user-management)
+- [Commands](#commands)
+- [Example Output](#example-output)
+- [Setup Instructions](#setup-instructions)
+  - [Prerequisites](#prerequisites)
+  - [Step 1: Create Google Sheets Document](#step-1-create-google-sheets-document)
+  - [Step 2: Configure Google Apps Script](#step-2-configure-google-apps-script)
+  - [Step 3: Run Setup Functions](#step-3-run-setup-functions)
+  - [Step 4: Deploy the Bot](#step-4-deploy-the-bot)
+  - [Step 5: Set Telegram Webhook](#step-5-set-telegram-webhook)
+  - [Optional: Maintenance Functions](#optional-maintenance-functions)
+- [🔄 Updating Your Bot](#-updating-your-bot)
+  - [Step 1: Check if Migration is Needed](#step-1-check-if-migration-is-needed)
+  - [Step 2: Backup Your Data](#step-2-backup-your-data)
+  - [Step 3: Update the Code](#step-3-update-the-code)
+  - [Step 4: Run Migration (if needed)](#step-4-run-migration-if-needed)
+  - [Step 5: Update Webhook (if needed)](#step-5-update-webhook-if-needed)
+  - [Step 6: Test the Update](#step-6-test-the-update)
+  - [Common Update Scenarios](#common-update-scenarios)
+  - [Troubleshooting Updates](#troubleshooting-updates)
+  - [🔄 Stay Updated](#-stay-updated)
+- [Technical Architecture](#technical-architecture)
+  - [Google Apps Script Integration](#google-apps-script-integration)
+  - [Data Storage (Google Sheets)](#data-storage-google-sheets)
+  - [Reminder System](#reminder-system)
+  - [Bot Features](#bot-features)
+- [⚠️ Scalability Disclaimer & Performance Warnings](#️-scalability-disclaimer--performance-warnings)
+  - [📊 Google Sheets as Database Limitations](#-google-sheets-as-database-limitations)
+  - [🔧 Optimization Strategies](#-optimization-strategies)
+  - [🎯 Recommendations Timeline](#-recommendations-timeline)
+  - [💡 Migration Options](#-migration-options)
+  - [🚨 Important Notes](#-important-notes)
+- [Why Chat ID Registration?](#why-chat-id-registration)
+- [Data Privacy & Security](#data-privacy--security)
+- [Analytics Capabilities](#analytics-capabilities)
+- [Useful Links](#useful-links)
+- [Contributing](#contributing)
+- [License](#license)
+
+---
+
 ## Features
 
 ### 🌍 Bilingual Support
@@ -468,5 +517,7 @@ This project is open source under the GPL-3.0 license. Contributions welcome!
 Licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
 
 ---
+
+[⬆️ Back to Top](#meditationtrackerbot-)
 
 _Built with ❤️ for the meditation community_
