@@ -252,8 +252,20 @@ function getAllUniqueUsers(sheet) {
         const userId = String(rows[i][1] || '').trim();
         const storedName = (rows[i][2] || '').trim();
         if (userId && !users[userId]) {
-            // The stored name should already be the properly formatted first name or username
-            users[userId] = storedName;
+            // Apply first name priority logic to stored names
+            let displayName = storedName;
+            if (displayName.startsWith('@')) {
+                // If it's a @username, try to extract a reasonable display name
+                displayName = displayName.substring(1); // Remove @
+                // If it looks like a combination of words, take first part
+                if (displayName.includes('_') || displayName.includes('.')) {
+                    const parts = displayName.split(/[_.]/);
+                    displayName = parts[0];
+                }
+                // Capitalize first letter
+                displayName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase();
+            }
+            users[userId] = displayName;
         }
     }
     return users; // {userId: displayName}
