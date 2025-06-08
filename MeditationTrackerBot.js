@@ -1,6 +1,7 @@
 const TELEGRAM_BOT_TOKEN = 'YOUR_BOT_TOKEN';
 const TELEGRAM_API_URL = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/`;
 const SHEET_ID = 'YOUR_SHEET_ID';
+const ADMIN_USER_ID = 'YOUR_ADMIN_USER_ID'; // Replace with your Telegram user ID for migration access
 
 // Helper function to format time consistently 
 function formatTime(timeValue, isSpanish = false) {
@@ -119,6 +120,9 @@ function doPost(e) {
             responseText = getSimpleStatus(sheet, date, command.includes('vibreshoy') || command.includes('estado') ? 'es' : 'en');
         } else if (command === '/ourgift' || command === '/nuestroregalo' || command === '/analysis' || command === '/analisis') {
             responseText = getGeneralAnalysisMessage(sheet, command.includes('nuestroregalo') || command.includes('analisis') ? 'es' : 'en');
+        } else if (command === '/migrate' && userId === ADMIN_USER_ID) {
+            // Admin-only migration command
+            responseText = migrateSheetToNewStructure();
         } else {
             responseText = 'Let\'s explore together! 🌱 Send /help or /ayuda for our peaceful commands.';
         }
