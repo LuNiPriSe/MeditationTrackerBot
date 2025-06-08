@@ -14,7 +14,8 @@ function doPost(e) {
         // Remove @botusername if present (e.g., /status@DhammaTrackerBot -> /status)
         const command = text.split(' ')[0].split('@')[0].toLowerCase();
         const chatId = message.chat.id;
-        const username = message.from.username ? '@' + message.from.username : message.from.first_name;
+        // Prioritize first name, fallback to username with @, then user ID
+        const username = message.from.first_name || (message.from.username ? '@' + message.from.username : `User${message.from.id}`);
         const userId = message.from.id;
 
         const now = new Date();
@@ -72,8 +73,9 @@ function doPost(e) {
         } else if (command === '/mygrowth' || command === '/micrecimiento' || command === '/myanalysis' || command === '/mianalisis') {
             responseText = getPersonalAnalysisMessage(sheet, userId, command.includes('micrecimiento') || command.includes('mianalisis') ? 'es' : 'en');
         } else if (command === '/morning' || command === '/meditate_morning' || command === '/mañana' || command === '/meditar_mañana') {
-            const result = logMeditation(sheet, date, username, 'morning', time, userId);
-            if (command === '/mañana' || command === '/meditar_mañana') {
+            const isSpanish = command === '/mañana' || command === '/meditar_mañana';
+            const result = logMeditation(sheet, date, username, 'morning', time, userId, isSpanish);
+            if (isSpanish) {
                 if (result.success) {
                     responseText = `🌅 ${username} ¡Hermosa meditación matutina completada a las ${time}! Gracias por nutrir tu paz interior 💚`;
                 } else {
@@ -87,8 +89,9 @@ function doPost(e) {
                 }
             }
         } else if (command === '/evening' || command === '/meditate_evening' || command === '/tarde' || command === '/meditar_tarde') {
-            const result = logMeditation(sheet, date, username, 'evening', time, userId);
-            if (command === '/tarde' || command === '/meditar_tarde') {
+            const isSpanish = command === '/tarde' || command === '/meditar_tarde';
+            const result = logMeditation(sheet, date, username, 'evening', time, userId, isSpanish);
+            if (isSpanish) {
                 if (result.success) {
                     responseText = `🌙 ${username} ¡Meditación vespertina llena de serenidad completada a las ${time}! Tu dedicación inspira 💜`;
                 } else {
@@ -160,7 +163,7 @@ function getRegisteredChats() {
     return data.slice(1).map(row => row[0]); // Return array of chat IDs
 }
 
-function logMeditation(sheet, date, username, type, time, userId) {
+function logMeditation(sheet, date, username, type, time, userId, isSpanish = false) {
     const dataRange = sheet.getDataRange();
     const rows = dataRange.getValues();
 
@@ -188,9 +191,21 @@ function logMeditation(sheet, date, username, type, time, userId) {
     const existingValue = sheet.getRange(userRowIndex, columnIndex).getValue();
 
     if (existingValue && existingValue !== '') {
+        // Format the existing time nicely
+        const formattedTime = typeof existingValue === 'string' ? existingValue :
+            Utilities.formatDate(new Date(`1970-01-01T${existingValue}`), 'GMT+2', 'HH:mm');
+
+        const sessionName = isSpanish ?
+            (type === 'morning' ? 'meditación matutina' : 'meditación vespertina') :
+            (type === 'morning' ? 'morning meditation' : 'evening meditation');
+
+        const message = isSpanish ?
+            `${username}, ya compartiste tu ${sessionName} hoy a las ${formattedTime}! 🌸✨ Tu dedicación es hermosa.` :
+            `${username}, you've already shared your ${sessionName} today at ${formattedTime}! 🌸✨ Your dedication is beautiful.`;
+
         return {
             success: false,
-            message: `Your ${type} meditation is already beautifully recorded at ${existingValue}! 🌸✨`
+            message: message
         };
     }
 
