@@ -563,8 +563,14 @@ function getGeneralAnalysisMessage(sheet, lang) {
         // Check this user for each date in their analysis window
         userAnalysisDates.forEach(date => {
             const row = rowMap[date];
-            const morning = row ? row[3] : '';
-            const evening = row ? row[4] : '';
+            let morning = '';
+            let evening = '';
+            if (row) {
+                // Handle both old (5-column) and new (6-column) structures
+                const isOldStructure = row.length === 5;
+                morning = isOldStructure ? (row[3] || '') : (row[4] || '');
+                evening = isOldStructure ? (row[4] || '') : (row[5] || '');
+            }
             const hasMorning = morning && morning !== '' && morning !== null;
             const hasEvening = evening && evening !== '' && evening !== null;
             if (hasMorning && hasEvening) {
@@ -574,7 +580,7 @@ function getGeneralAnalysisMessage(sheet, lang) {
             } else if (hasEvening) {
                 eveningOnly++;
             } else {
-                noSessions++; // User had no activity on this date in their window
+                noSessions++;
             }
         });
     });
